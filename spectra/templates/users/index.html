@@ -1,10 +1,12 @@
-List of users:<br>
+<h1>List of users:</h1>
 <ul>
 {% for user in users %}
     <li>
         {{user.email}} &bull;
-        <a href="{{url_for('edit', id = user.id)}}">Edit</a> &bull;
-        <a href="{{url_for('destroy', id = user.id)}}">Delete</a>
+        <a href="{{url_for('edit', id=user.id)}}">Edit</a> &bull;
+        <a href="{{url_for('destroy', id=user.id)}}">Delete</a>
     </li>
 {% endfor %}
 </ul>
+
+<a href="{{url_for('new')}}">Create New User</a>
