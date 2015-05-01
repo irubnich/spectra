@@ -4,13 +4,22 @@ from spectra.models.user import User
 from flask import render_template, redirect, url_for, request
 from IPython import embed
 
+
+#
+# Login
+#
+
+@app.route("/login")
+def login():
+    return render_template("users/login.html")
+
 #
 # List Users
 #
 
 @app.route("/users")
 def index():
-    users = User.query.all()
+    users = User.query.all() # = Select * from users
     return render_template("users/index.html", users=users)
 
 #
@@ -64,3 +73,10 @@ def destroy(id):
     db.session.delete(user)
     db.session.commit()
     return redirect(url_for('index'))
+
+
+
+
+
+
+

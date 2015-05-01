@@ -1,1 +1,2 @@
 import spectra.controllers.users_controller
+import spectra.controllers.products_controller
