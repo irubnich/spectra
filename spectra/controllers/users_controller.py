@@ -4,7 +4,7 @@ from spectra.models.user import User
 from spectra.models.invitation import Invitation
 from spectra.models.salespeople_client import SalespeopleClient
 from spectra.controllers.user_helpers import set_session
-from flask import render_template, redirect, url_for, request, session
+from flask import render_template, redirect, url_for, request, session, flash
 from IPython import embed
 from datetime import datetime
 import hashlib
@@ -27,17 +27,21 @@ def process_login():
     required_fields = [email, password]
     trimmed = [i.strip() for i in required_fields]
     if "" in trimmed:
-        return redirect(url_for('login', error="You're missing required fields"))
+        flash("You're missing required fields.")
+        return redirect(url_for('login'))
 
     # Email validation
     if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        return redirect(url_for('login', error="Your email address is invalid."))
+        flash("Your email address is invalid.")
+        return redirect(url_for('login'))
 
     user = User.authenticate(email, password)
     if user:
         set_session(user)
         return redirect(url_for("products_index"))
-    return redirect(url_for("login", error="Invalid login."))
+
+    flash("Invalid login.")
+    return redirect(url_for("login"))
 
 #
 # List Users
@@ -77,15 +81,18 @@ def create():
     required_fields = [email, first_name, last_name, init_password, confirm_password]
     trimmed = [i.strip() for i in required_fields]
     if "" in trimmed:
-        return redirect(url_for('new', error="You're missing required fields."))
+        flash("You're missing required fields.")
+        return redirect(url_for('new'))
 
     # Password matching
     if init_password != confirm_password:
-        return redirect(url_for('new', error="Your passwords do not match."))
+        flash("Your passwords do not match.")
+        return redirect(url_for('new'))
 
     # Email validation
     if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        return redirect(url_for('new', error="Your email address is invalid."))
+        flash("Your email address is invalid.")
+        return redirect(url_for('new'))
 
     password = hashlib.sha512(init_password).hexdigest()
 
@@ -93,11 +100,13 @@ def create():
     if invite_code:
         invite = Invitation.query.filter(Invitation.invite_code == invite_code).first()
         if not invite or invite.user_id:
-            return redirect(url_for('new', error="Your invitation code is invalid."))
+            flash("Your invitation code is invalid.")
+            return redirect(url_for('new'))
 
         salesperson = User.query.get(invite.salesperson_id)
         if not salesperson or not salesperson.active:
-            return redirect(url_for('new', error="Your invitation code is for a salesperson who does not exist or is inactive."))
+            flash("Your invitation code is for a salesperson who does not exist or is inactive.")
+            return redirect(url_for('new'))
 
     date_created = datetime.now()
 
@@ -114,7 +123,8 @@ def create():
         invite.user_id = user.id
         db.session.commit()
     else:
-        return redirect(url_for('login', error="You have been signed up but you cannot access Spectra until you are claimed by a Salesperson."))
+        flash("You have been signed up but you cannot access Spectra until you are claimed by a Salesperson.")
+        return redirect(url_for('login'))
 
     # Login!
     set_session(user)

@@ -3,10 +3,6 @@
 {% block body %}
 	<h1>Creating User</h1>
 
-	{% if request.args.get("error") %}
-		{{request.args.get("error")}}
-	{% endif %}
-
 	<form action="{{url_for('create')}}" method="post">
 	    First Name: <input type="text" name="first_name" /><br>
 	    Last Name: <input type="text" name="last_name" /><br>
