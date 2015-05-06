@@ -9,4 +9,6 @@
     Price: <strike>${{product.price}}</strike>
     Promotional Price: ${{product.promotional_price()}}
 
+    <a href="{{url_for('add_to_cart', id=product.id, quantity=1)}}">Add to Cart</a>
+
 {% endblock %}

@@ -3,18 +3,27 @@
 {% block body %}
 
     <h1>List of products:</h1>
-    <ul>
 
-    {% for product in products %}
-        <li>
-            {{product.name}} &bull;
-            {{product.description}}&bull;
-            {{product.price}}&bull;
-            {{product.category}}&bull;
-            {{product.inventory}}&bull;
-            {{product.promotion}}&bull;
-
-        </li>
-    {% endfor %}
-    </ul>
+    <table>
+        <tr>
+            <td>Name</td>
+            <td>Description</td>
+            <td>Price</td>
+            <td>Discounted Price</td>
+            <td>Category</td>
+            <td>Inventory</td>
+            <td>Promotion</td>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td><a href="{{url_for('show_product', id=product.id)}}">{{product.name}}</a></td>
+            <td>{{product.description}}</td>
+            <td>{{product.price}}</td>
+            <td>{{product.promotional_price()}}</td>
+            <td>{{product.category}}</td>
+            <td>{{product.inventory}}</td>
+            <td>{{product.promotion}}</td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
