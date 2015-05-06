@@ -2,7 +2,7 @@
 
 {% block body %}
 
-    <h1>{{product.name}}</h1>
+    <h1>{{product.name}} <br> <img src="{{product.image}}" alt="{{product.name}}" width="280" height="200"></h1>
     Description: {{product.description}}
     Left in stock: {{product.inventory}} pieces
     Category: {{product.category}}

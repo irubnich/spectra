@@ -13,6 +13,7 @@
             <td>Category</td>
             <td>Inventory</td>
             <td>Promotion</td>
+            <td> Image </td>
         </tr>
         {% for product in products %}
         <tr>
@@ -23,6 +24,7 @@
             <td>{{product.category}}</td>
             <td>{{product.inventory}}</td>
             <td>{{product.promotion}}</td>
+            <td><img src="{{product.image}}" alt="{{product.name}}" width="280" height="200"></td>
         </tr>
         {% endfor %}
     </table>
