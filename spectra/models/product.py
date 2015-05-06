@@ -18,6 +18,9 @@ class Product(db.Model):
         self.category = category
         self.inventory = inventory
         self.promotion = promotion
+        
+    def promotional_price(self):
+        return self.price - (self.price * self.promotion)
 
     def __repr__(self):
         return '<Product %r>' % self.name

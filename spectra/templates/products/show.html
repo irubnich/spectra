@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+    <h1>{{product.name}}</h1>
+    Description: {{product.description}}
+    Left in stock: {{product.inventory}} pieces
+    Category: {{product.category}}
+    Price: <strike>${{product.price}}</strike>
+    Promotional Price: ${{product.promotional_price()}}
+
+{% endblock %}
