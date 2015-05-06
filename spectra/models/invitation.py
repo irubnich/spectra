@@ -1,7 +1,7 @@
 from spectra.models import db
 
 class Invitation(db.Model):
-    __tablename__ = 'Invitation'
+    __tablename__ = 'invitations'
 
     id = db.Column(db.Integer, primary_key=True)
     salesperson_id = db.Column(db.Integer)
