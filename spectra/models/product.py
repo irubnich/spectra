@@ -12,7 +12,7 @@ class Product(db.Model):
     promotion = db.Column(db.Float)
 
     def __init__(self, name, description, price, category, inventory, promotion):
-		self.name = name
+        self.name = name
         self.description = description
         self.price = price
         self.category = category
