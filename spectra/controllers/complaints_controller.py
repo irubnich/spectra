@@ -43,8 +43,14 @@ def create_complaint():
 
     if complainer.type == "client":
         other_user = complainer.get_salesperson()
+
     if complainer.type == "salesperson":
         other_user = User.query.get(request.form["client"])
+
+        # Blacklist?
+        num_prev_complaints = len(other_user.complaints().all())
+        if num_prev_complaints % 2 == 0 and num_prev_complaints > 0:
+            other_user.active = false
 
     complaint = Complaint(other_user.id, complainer.id, details, datetime.now())
     db.session.add(complaint)

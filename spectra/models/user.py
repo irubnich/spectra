@@ -1,5 +1,6 @@
 from spectra.models import db
 from spectra.models.salespeople_client import SalespeopleClient
+from spectra.models.complaint import Complaint
 import hashlib
 
 class User(db.Model):
@@ -35,6 +36,9 @@ class User(db.Model):
             return None
 
         return User.query.get(salesperson_entry.salesperson_id)
+
+    def complaints(self):
+        return Complaint.query.filter(Complaint.user_id == self.id)
 
     @staticmethod
     def authenticate(email, password):
