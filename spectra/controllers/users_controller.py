@@ -18,6 +18,12 @@ import re
 def login():
     return render_template("users/login.html")
 
+@app.route("/logout")
+def logout():
+    session.pop("user", None)
+    flash("You've logged out. Come again.")
+    return redirect(url_for("login"))
+
 @app.route("/login", methods=["POST"])
 def process_login():
     email = request.form["email"]

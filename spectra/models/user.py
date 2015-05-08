@@ -1,4 +1,5 @@
 from spectra.models import db
+from spectra.models.salespeople_client import SalespeopleClient
 import hashlib
 
 class User(db.Model):
@@ -22,6 +23,19 @@ class User(db.Model):
         self.active = active
         self.date_created = date_created
 
+    def name(self):
+        return "{0} {1}".format(self.first_name, self.last_name)
+
+    def get_salesperson(self):
+        if self.type != "client":
+            return None
+
+        salesperson_entry = SalespeopleClient.query.filter(SalespeopleClient.client_id == self.id).first()
+        if not salesperson_entry:
+            return None
+
+        return User.query.get(salesperson_entry.salesperson_id)
+
     @staticmethod
     def authenticate(email, password):
         user = User.query.filter(User.email == email).first()
@@ -31,6 +45,6 @@ class User(db.Model):
         hashed_password = hashlib.sha512(password).hexdigest()
         if user.password == hashed_password:
             return user
-            
+
     def __repr__(self):
         return '<User %r>' % self.email
