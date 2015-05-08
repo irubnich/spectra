@@ -12,8 +12,10 @@ class User(db.Model):
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean)
     date_created = db.Column(db.DateTime)
+    discount = db.Column(db.Float)
+    commission = db.Column(db.Float)
 
-    def __init__(self, email, type, first_name, last_name, password, active, date_created):
+    def __init__(self, email, type, first_name, last_name, password, active, date_created, discount, commission):
         self.email = email
         self.type = type
         self.first_name = first_name
@@ -21,6 +23,8 @@ class User(db.Model):
         self.password = password
         self.active = active
         self.date_created = date_created
+        self.discount = discount
+        self.commission = commission
 
     @staticmethod
     def authenticate(email, password):
@@ -31,6 +35,6 @@ class User(db.Model):
         hashed_password = hashlib.sha512(password).hexdigest()
         if user.password == hashed_password:
             return user
-            
+
     def __repr__(self):
         return '<User %r>' % self.email
