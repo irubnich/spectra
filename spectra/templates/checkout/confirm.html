@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block body %}
+	<br>
+	{{salesperson}}
+	<br>
+	{% for product in products %}
+	<img src="{{product.product.image}}" alt="{{product.product.name}}" width="280" height="200">
+	{{product.product.name}}
+	{{product.quantity}}
+	{{product.product.price * product.quantity}}
+	<br>
+	{% endfor %}
+	{{total}}
+{% endblock %}
