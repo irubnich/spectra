@@ -18,10 +18,17 @@ def products_index():
     if not valid:
         flash(error)
         return redirect(url_for('login'))
+   
+    categories = db.session.query(Product.category.distinct()).all()    
+    category = request.args.get('category')
+    if category:
+        products = Product.query.filter_by(category=category).all()
+    else:
+        products = Product.query.all()
 
-    products = Product.query.all()
-    return render_template("products/index.html", products=products)
+    return render_template("products/index.html", categories=categories, products=products)
 
+    
 #
 # Show a product
 #
@@ -36,8 +43,8 @@ def show_product(id):
     product = Product.query.get_or_404(id)
     return render_template("products/show.html", product=product)
 
-@app.route("/products/<int:id>/add-to-cart", methods=["POST"])
-def add_to_cart(id):
+@app.route("/products/<int:id>/add-to-cart/<int:quantity>", methods=["POST"])
+def add_to_cart(id, quantity):
     (valid, error) = check_user_validity()
     if not valid:
         flash(error)
@@ -45,7 +52,7 @@ def add_to_cart(id):
 
     product = Product.query.get_or_404(id)
     quantity = request.form["quantity"]
-
+	
     item_updated = False
     for item in session["cart"]["items"]:
         if item["product"] == product.id:
@@ -59,6 +66,9 @@ def add_to_cart(id):
             "product": id,
             "quantity": quantity
         })
-
     flash("Successfully added {0} to cart.".format(product.name))
+    
+    if request.args.get('return_to_home'):
+        return redirect(url_for("products_index"))
+        
     return redirect(url_for("show_product", id=product.id))
