@@ -9,6 +9,10 @@
     Price: <strike>${{product.price}}</strike>
     Promotional Price: ${{product.promotional_price()}}
 
-    <a href="{{url_for('add_to_cart', id=product.id, quantity=1)}}">Add to Cart</a>
+    <form action="{{url_for('add_to_cart', id=product.id)}}" method="post">
+        Quantity: <input type="number" min="1" max="999" value="1" name="quantity">
+        <!-- "number" ensures a floating point number is typed -->
+        <input type="submit" value="Add to Cart">
+    </form>
 
 {% endblock %}
