@@ -36,14 +36,15 @@ def show_product(id):
     product = Product.query.get_or_404(id)
     return render_template("products/show.html", product=product)
 
-@app.route("/products/<int:id>/add-to-cart/<int:quantity>")
-def add_to_cart(id, quantity):
+@app.route("/products/<int:id>/add-to-cart", methods=["POST"])
+def add_to_cart(id):
     (valid, error) = check_user_validity()
     if not valid:
         flash(error)
         return redirect(url_for('login'))
 
     product = Product.query.get_or_404(id)
+    quantity = request.form["quantity"]
 
     session["cart"]["items"].append({
         "product": id,
