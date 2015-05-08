@@ -10,15 +10,18 @@ from IPython import embed
 def cart_index():
     cart_items = session["cart"]["items"]
     products = []
+    total = 0.0
 
-    # loop over products currently in cart 
+    # loop over products currently in cart
     for cart_item in cart_items:
+        db_product = Product.query.get(cart_item["product"])
         products.append({
-            "product": Product.query.get(cart_item["product"]),
+            "product": db_product,
             "quantity": cart_item["quantity"]
         })
-        
-    return render_template('cart/index.html', products=products)
+        total += (db_product.price * int(cart_item["quantity"]))
+
+    return render_template('cart/index.html', products=products, total=total)
 
 #
 # Edit cart item quantity
@@ -51,15 +54,3 @@ def cart_delete(id):
 
     session["cart"]["items"].remove(product_dict)
     return redirect(url_for('cart_index'))
-
-
-
-
-
-
-
-
-
-
-
-

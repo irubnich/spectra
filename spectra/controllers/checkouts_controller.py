@@ -16,9 +16,22 @@ def checkout_page():
 	if not valid:
 		flash(error)
 		return redirect(url_for('login'))
-	
-	return render_template("checkout/index.html") #todo goes to a form page
-	
+
+	cart_items = session["cart"]["items"]
+	products = []
+	total = 0.0
+
+	# Make cookie into something coherent
+	for cart_item in cart_items:
+		db_product = Product.query.get(cart_item["product"])
+		products.append({
+			"product": db_product,
+			"quantity": cart_item["quantity"]
+		})
+		total += (db_product.price * int(cart_item["quantity"]))
+
+	return render_template("checkout/index.html", products=products, total=total)
+
 @app.route("/checkout", methods=["POST"])	#todo and comes from a form page?
 def place_order():
 	user = User.query.get(session["user"]["id"])
@@ -28,28 +41,28 @@ def place_order():
 	date = datetime.now()
 	date_approved = None
 	date_rejected = None
-	
+
 	#might be wrong need checking
 	products = session["cart"]["items"] # array of dictionaries
 	total = 0
 	for item in products:
 		db_product = Product.query.get(item["product"])
-		total += (db_product.price * item["quantity"])
+		total += (db_product.price * int(item["quantity"]))
 
 	discount = user.discount
 	user.discount = 0 #Discounts are one time use
-	
+
 	order = Order(client_id, salesperson_id, date, date_approved, date_rejected, total, discount)
 	db.session.add(order)
 	db.session.commit()
-	
+
 	#order_product table might be wrong
 	for item in products:
 		db_product = Product.query.get(item["product"])
 		db_quantity = item["quantity"]
 		order_product = OrderProduct(order.id, db_product.id, db_quantity)
 		db.session.add(order_product)
-	
+
 	db.session.commit()
 	return redirect(url_for('order_confirm', id=order.id))
 
@@ -59,7 +72,7 @@ def order_confirm(id):
 	salesperson = User.query.filter(User.id == order.salesperson_id).first() #Obtain Salesperson so we can use his name
 
 	order_items = OrderProduct.query.filter(OrderProduct.order_id == id).all() # = Select all products from OrderProduct in recent order so we can list them
-	
+
 	grouped_products = map(lambda item: { "product": Product.query.get(item.product_id), "quantity": item.quantity }, order_items)
-	
+
 	return render_template("checkout/confirm.html", products=grouped_products, total=order.total, salesperson=salesperson.name())

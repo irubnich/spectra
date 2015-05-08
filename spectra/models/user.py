@@ -26,6 +26,9 @@ class User(db.Model):
         self.discount = discount
         self.commission = commission
 
+    def name(self):
+        return "{0} {1}".format(self.first_name, self.last_name)
+
     @staticmethod
     def authenticate(email, password):
         user = User.query.filter(User.email == email).first()

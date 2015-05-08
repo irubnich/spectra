@@ -10,7 +10,7 @@
 	    State: <input type="text" name="state" /><br>
 	    Zip Code: <input type="text" name="zip_code" /><br>
 	    Phone: <input type="text" name="phone" maxlength=11 /><br>
-		
+
 	<p>Billing Info </p>
 	    Card Number: <input type="text" name="card_number" size = 10 maxlength=16 /><br>
 	    Expiration: <input type="text" name="exp_month" size=1 maxlength=2 />
@@ -19,5 +19,15 @@
 		<input type="submit" value="Submit" />
 
 	</form>
-	
+
+	<ul>
+    {% for product in products %}
+        <li>
+            {{product["product"].name}}: {{product.quantity}}
+        </li>
+    {% endfor %}
+    </ul>
+
+	Total: {{total}}
+
 {% endblock %}
