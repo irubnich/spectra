@@ -20,15 +20,37 @@ def cart_index():
         
     return render_template('cart/index.html', products=products)
 
+#
+# Edit cart item quantity
+#
+
 @app.route("/cart", methods=["POST"])
 def cart_edit():
+    product_id = request.form["product_id"]
     quantity = request.form["quantity"]
 
-    session["cart"]["items"].append({
-        "product": id,
-        "quantity": quantity
-    })
+    # product_dict = None
+    for item in session["cart"]["items"]:
+        if item["product"] == int(product_id):
+            item["quantity"] = quantity
+            break
+
     return redirect(url_for("cart_index"))
+
+#
+# Delete a cart item
+#
+
+@app.route("/cart/<int:id>/delete")
+def cart_delete(id):
+    product_dict = None
+    for item in session["cart"]["items"]:
+        if item["product"] == id:
+            product_dict = item
+            break
+
+    session["cart"]["items"].remove(product_dict)
+    return redirect(url_for('cart_index'))
 
 
 

@@ -46,6 +46,11 @@ def add_to_cart(id):
     product = Product.query.get_or_404(id)
     quantity = request.form["quantity"]
 
+    # for item in session["cart"]["items"]:
+    #     if item["product"] == product.id:
+    #         item["quantity"] += quantity
+    #         break
+
     session["cart"]["items"].append({
         "product": id,
         "quantity": quantity
