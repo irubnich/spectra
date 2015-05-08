@@ -22,7 +22,7 @@ class Product(db.Model):
         self.image = image
         
     def promotional_price(self):
-        return self.price - (self.price * self.promotion)
+        return format((self.price - (self.price * self.promotion)), '.2f')
 
     def __repr__(self):
         return '<Product %r>' % self.name

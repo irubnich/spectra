@@ -18,10 +18,17 @@ def products_index():
     if not valid:
         flash(error)
         return redirect(url_for('login'))
+   
+    categories = db.session.query(Product.category.distinct()).all()    
+    category = request.args.get('category')
+    if category:
+        products = Product.query.filter_by(category=category).all()
+    else:
+        products = Product.query.all()
 
-    products = Product.query.all()
-    return render_template("products/index.html", products=products)
+    return render_template("products/index.html", categories=categories, products=products)
 
+    
 #
 # Show a product
 #
@@ -51,4 +58,8 @@ def add_to_cart(id, quantity):
     })
 
     flash("Successfully added {0} to cart.".format(product.name))
+    
+    if request.args.get('return_to_home'):
+        return redirect(url_for("products_index"))
+        
     return redirect(url_for("show_product", id=product.id))
