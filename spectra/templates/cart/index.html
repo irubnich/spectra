@@ -2,13 +2,16 @@
 {% block body %}
 
     <h2>My Cart</h2>
-
+	
+	<form action="{{url_for('products_index')}}">
+		<input type="submit" value="Back">
+	</form>	
     <ul>
     {% for product in products %}
         <li>
             {{product["product"].name}}: {{product.quantity}}
             <form action="{{url_for('cart_edit')}}" method='post'>
-                <input type="hidden" name="product_id" value="{{product["product"].id}}">
+                <input type="hidden" name="product_id" value="{{product['product'].id}}">
                 Quantity: <input type="number" min="1" max="999" value="{{product.quantity}}" name="quantity">
                 <input type="submit" value="Update">
             </form>
