@@ -1,18 +1,19 @@
 {% extends "layout.html" %}
 {% block body %}
-
-    <h2>My Cart</h2>
-	
+<!--Should the mycart link from header be in this file? It links back to this page-->
+<!--Should we delete line 1?-->
 	<form action="{{url_for('products_index')}}">
-		<input type="submit" value="Back">
+		<input type="submit" value="Home Page">
 	</form>	
+    <h2>My Cart</h2>
+
     <ul>
     {% for product in products %}
         <li>
             {{product["product"].name}}: {{product.quantity}}
             <form action="{{url_for('cart_edit')}}" method='post'>
                 <input type="hidden" name="product_id" value="{{product['product'].id}}">
-                Quantity: <input type="number" min="1" max="999" value="{{product.quantity}}" name="quantity">
+                Quantity: <input type="number" min="1" max="{{product.inventory}}" value="{{product.quantity}}" name="quantity">
                 <input type="submit" value="Update">
             </form>
             <a href="{{url_for('cart_delete', id=product["product"].id)}}">Delete</a>
