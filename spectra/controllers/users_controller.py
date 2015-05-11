@@ -116,7 +116,7 @@ def create():
 
     date_created = datetime.now()
 
-    user = User(email, "client", first_name, last_name, password, True, date_created)
+    user = User(email, "client", first_name, last_name, password, True, date_created, 0.0, 0.0)
     db.session.add(user)
     db.session.commit()
 

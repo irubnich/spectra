@@ -10,17 +10,19 @@ class Product(db.Model):
     category = db.Column(db.String(255))
     inventory = db.Column(db.Integer)
     promotion = db.Column(db.Float)
+    image = db.Column(db.String)
 
-    def __init__(self, name, description, price, category, inventory, promotion):
+    def __init__(self, name, description, price, category, inventory, promotion, image):
         self.name = name
         self.description = description
         self.price = price
         self.category = category
         self.inventory = inventory
         self.promotion = promotion
+        self.image = image
         
     def promotional_price(self):
-        return self.price - (self.price * self.promotion)
+        return format((self.price - (self.price * self.promotion)), '.2f')
 
     def __repr__(self):
         return '<Product %r>' % self.name
