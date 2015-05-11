@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 
 {% block body %}
-
+	<form action="{{url_for('products_index')}}">
+		<input type="submit" value="Home Page">
+	</form>	
 <style>
 .boxed {
   border: 1px solid green ;

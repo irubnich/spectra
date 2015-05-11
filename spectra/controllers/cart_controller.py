@@ -17,7 +17,8 @@ def cart_index():
         db_product = Product.query.get(cart_item["product"])
         products.append({
             "product": db_product,
-            "quantity": cart_item["quantity"]
+            "quantity": cart_item["quantity"],
+			"inventory": db_product.inventory
         })
         total += (db_product.price * int(cart_item["quantity"]))
 
