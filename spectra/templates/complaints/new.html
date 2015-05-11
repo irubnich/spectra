@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block body %}
+	<h1>New Complaint</h1>
+
+	<form action="{{url_for('create_complaint')}}" method="post">
+        {% if clients %}
+            <select name="client">
+                {% for client in clients %}
+                    <option value="{{client.id}}">{{client.name()}}</option>
+                {% endfor %}
+            </select>
+            <br>
+        {% endif %}
+	    <textarea placeholder="Please enter the details of your complaint." name="details"></textarea><br>
+	    <input type="submit" value="Submit" />
+	</form>
+{% endblock %}

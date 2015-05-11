@@ -1,4 +1,6 @@
 from spectra.models import db
+from spectra.models.salespeople_client import SalespeopleClient
+from spectra.models.complaint import Complaint
 import hashlib
 
 class User(db.Model):
@@ -28,6 +30,45 @@ class User(db.Model):
 
     def name(self):
         return "{0} {1}".format(self.first_name, self.last_name)
+
+    # For client
+    def get_salesperson(self):
+        if self.type != "client":
+            return None
+
+        salesperson_entry = SalespeopleClient.query.filter(SalespeopleClient.client_id == self.id).first()
+        if not salesperson_entry:
+            return None
+
+        return User.query.get(salesperson_entry.salesperson_id)
+
+    # For salesperson
+    def get_clients(self):
+        if self.type != "salesperson":
+            raise BaseException("Can't get clients for a non-salesperson!")
+
+        relations = SalespeopleClient.query.filter(SalespeopleClient.salesperson_id == self.id)
+        return map(lambda relation: User.query.get(relation.client_id), relations)
+
+    def complaints(self):
+        return Complaint.query.filter(Complaint.user_id == self.id)
+
+    def blacklist(self):
+        if self.type != "client":
+            raise BaseException("Can't blacklist a non-client!")
+
+        self.deactivate()
+
+    def suspend(self):
+        if self.type != "salesperson":
+            raise BaseException("Can't suspend a non-salesperson!")
+
+        self.deactivate()
+
+    def deactivate(self):
+        self.active = False
+        db.session.add(self)
+        db.session.commit()
 
     @staticmethod
     def authenticate(email, password):
