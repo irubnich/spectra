@@ -18,8 +18,7 @@ def new_complaint():
     user = User.query.get(session["user"]["id"])
     clients = None
     if user.type == "salesperson":
-        relations = SalespeopleClient.query.filter(SalespeopleClient.salesperson_id == user.id)
-        clients = map(lambda relation: User.query.get(relation.client_id), relations)
+        clients = user.get_clients()
 
     return render_template("complaints/new.html", clients=clients)
 
@@ -43,6 +42,18 @@ def create_complaint():
 
     if complainer.type == "client":
         other_user = complainer.get_salesperson()
+        num_prev_complaints = len(other_user.complaints().all()) + 1 # Adding one for the current complaint
+
+        # Suspend?
+        if num_prev_complaints % 9 == 0 and num_prev_complaints > 0:
+            print "Suspending {0}!".format(other_user.email)
+            other_user.suspend()
+
+        # Commission decrease? Make sure we they are not suspended, that's punishment enough...
+        if num_prev_complaints % 2 == 0 and num_prev_complaints > 0 and other_user.active:
+            print "Decreasing commission for {0}!".format(other_user.email)
+            other_user.commission = other_user.commission * 0.9
+            db.session.commit()
 
     if complainer.type == "salesperson":
         other_user = User.query.get(request.form["client"])
