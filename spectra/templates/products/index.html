@@ -1,31 +1,25 @@
 {% extends "layout.html" %}
 
 {% block body %}
-
-    
 <style>
-.boxed {
-  border: 1px solid green ;
-  float:left;
-  padding:5px;
-}
+    .boxed {
+      border: 1px solid green ;
+      float:left;
+      padding:5px;
+    }
 </style>
-    
+
     <p><a href="{{url_for('products_index')}}">show all</a></p>
     <p>Filter by:
-   {% for category in categories %}
-    
-        <a href="{{url_for('products_index', category=category[0])}}">{{category[0]}}</a>&nbsp;&nbsp;&nbsp;&nbsp;
-            
-       
-    {% endfor %}
+        {% for category in categories %}
+            <a href="{{url_for('products_index', category=category[0])}}">{{category[0]}}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        {% endfor %}
     </p>
     <h1>List of products:</h1>
 
     {% for product in products %}
-    
+
         <div class="boxed">
-            
             <a href="{{url_for('show_product', id=product.id)}}"><img src="{{product.image}}" alt="For more details" width="280" height="200"><br><br>{{product.name}}</a>
             <div style='float:right'><strong><strike>${{product.price}}</strike>&nbsp;&nbsp;&nbsp;&nbsp;<i>now:  </i><ins>${{product.promotional_price()}}</ins></strong></div><br><br>
 			<div style="text-align:center">
@@ -35,7 +29,6 @@
 				</form>
 			</div>
 		</div>
-        
-    {% endfor %}
 
+    {% endfor %}
 {% endblock %}

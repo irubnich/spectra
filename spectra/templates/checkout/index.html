@@ -1,9 +1,6 @@
 {% extends "layout.html" %}
 
 {% block body %}
-	<form action="{{url_for('products_index')}}">
-		<input type="submit" value="Home Page">
-	</form>	
 	<p>Checkout</p>
 	<p>Shipping Info </p>
 	<form action="{{url_for('place_order')}}" method="post">
