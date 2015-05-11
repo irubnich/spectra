@@ -2,25 +2,40 @@
 
 {% block body %}
 	<style>
-	.boxed {
-		border: 1px solid green ;
-		float:left;
-		padding:5px;
-	}
+		.product-img img {
+			width: 300px;
+		}
 	</style>
-    <br><br><font size="133"><strong>{{product.name}}</strong></font><br><br>
-    <div>
-        <div style="float:left" class="boxed">
-            <img src="{{product.image}}" width="500" height="400">
-        </div>
-        <div style="float:right" class="boxed">
-            <h1>Description: </h2><br>{{product.description}}<br><br>
-        <h2>Price:</h2><div style="float:center"><strong><strike>${{product.price}}</strike>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>now:  </i><ins>${{product.promotional_price()}}</ins></strong></div><br><br>
-        <form action="{{url_for('add_to_cart', id=product.id, quantity=1, return_to_home=True)}}" method="post">
-            <strong>Quantity: </strong><input type="number" min="1" max="{{product.inventory}}" value="1" name="quantity">
-            <br> left in stock: {{product.inventory}} pieces
-            <br><br><div style="text-align:center"><input type="submit" value="Add to Cart"></div>
-        </form>
-        </div>
-    </div>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4">
+				<h1>{{product.name}}</h1>
+				<div class="product-img">
+		            <img src="{{product.image}}">
+		        </div>
+			</div>
+			<div class="col-md-8">
+				<h1>Description</h1>
+				{{product.description}}
+
+				<h2>Price</h2>
+				<em>Was:</em>
+				<strike>${{product.price}}</strike>
+				<br>
+				<em>Now:</em>
+				${{product.promotional_price()}}
+
+				<h2>Buy Now!</h2>
+				<form action="{{url_for('add_to_cart', id=product.id, quantity=1, return_to_home=True)}}" method="post">
+		            <strong>Quantity:</strong>
+					<input type="number" min="1" max="{{product.inventory}}" value="1" name="quantity">
+		            <br>
+					Left in stock: {{product.inventory}}
+		            <br><br>
+					<input type="submit" value="Add to Cart">
+		        </form>
+			</div>
+		</div>
+	</div>
 {% endblock %}
