@@ -31,9 +31,6 @@ class User(db.Model):
     def name(self):
         return "{0} {1}".format(self.first_name, self.last_name)
 
-    def name(self):
-        return "{0} {1}".format(self.first_name, self.last_name)
-
     def get_salesperson(self):
         if self.type != "client":
             return None
@@ -46,6 +43,14 @@ class User(db.Model):
 
     def complaints(self):
         return Complaint.query.filter(Complaint.user_id == self.id)
+
+    def blacklist(self):
+        if self.type != "client":
+            raise BaseException("Can't blacklist a non-client!")
+
+        self.active = False
+        db.session.add(self)
+        db.session.commit()
 
     @staticmethod
     def authenticate(email, password):
