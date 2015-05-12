@@ -18,6 +18,11 @@ def checkout_page():
 		return redirect(url_for('login'))
 
 	cart_items = session["cart"]["items"]
+
+	if len(cart_items) == 0:
+		flash("You have no items in your cart!")
+		return redirect(url_for('products_index'))
+
 	products = []
 	total = 0.0
 
