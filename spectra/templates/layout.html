@@ -8,13 +8,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="stylesheet" href="{{url_for('static', filename='styles/bootstrap.css')}}">
+
+        <style>
+            .flash {
+                padding: 10px;
+            }
+        </style>
     </head>
     <body>
         {% include "header.html" %}
 
-        {% for message in get_flashed_messages() %}
-            <div class="flash">{{ message }}</div>
-        {% endfor %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    {% for message in get_flashed_messages() %}
+                        <p class="bg-info flash">{{message}}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 
         {% block body %}{% endblock %}
     </body>
