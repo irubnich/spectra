@@ -1,33 +1,103 @@
 {% extends "layout.html" %}
 
 {% block body %}
-	<p>Checkout</p>
-	<p>Shipping Info </p>
-	<form action="{{url_for('place_order')}}" method="post">
-	    Name: <input type="text" name="name" /><br>
-	    Address: <input type="text" name="address" /><br>
-	    City: <input type="text" name="city" /><br>
-	    State: <input type="text" name="state" /><br>
-	    Zip Code: <input type="text" name="zip_code" /><br>
-	    Phone: <input type="text" name="phone" maxlength=11 /><br>
+	<style>
+		.container {
+			margin-bottom: 20px;
+		}
+	</style>
 
-	<p>Billing Info </p>
-	    Card Number: <input type="text" name="card_number" size = 10 maxlength=16 /><br>
-	    Expiration: <input type="text" name="exp_month" size=1 maxlength=2 />
-		<input type="text" name="exp_year" size=1 maxlength=2 /><br>
-	    CVV: <input type="text" name="cvv" size = 1 maxlength=3 /><br>
-		<input type="submit" value="Submit" />
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<h1>Checkout</h1>
 
-	</form>
+				<form action="{{url_for('place_order')}}" method="post">
+					<h3>Shipping Info</h3>
 
-	<ul>
-    {% for product in products %}
-        <li>
-            {{product["product"].name}}: {{product.quantity}}
-        </li>
-    {% endfor %}
-    </ul>
+					<div class="form-group">
+						<label>Name</label>
+						<input type="text" name="name" class="form-control" placeholder="Enter your name">
+					</div>
+					<div class="form-group">
+						<label>Address</label>
+						<input type="text" name="address" class="form-control" placeholder="Enter your address">
+					</div>
+					<div class="form-group">
+						<label>City</label>
+						<input type="text" name="city" class="form-control" placeholder="Enter your city">
+					</div>
+					<div class="form-group">
+						<label>State</label>
+						<input type="text" name="state" class="form-control" placeholder="Enter your state">
+					</div>
+					<div class="form-group">
+						<label>Zip Code</label>
+						<input type="text" name="zip_code" class="form-control" placeholder="Enter your Zip Code">
+					</div>
+					<div class="form-group">
+						<label>Phone</label>
+						<input type="telephone" name="phone" maxlength="11" class="form-control" placeholder="Enter your telephone number">
+					</div>
 
-	Total: {{total}}
+					<h3>Billing Info</h3>
+
+					<div class="form-group">
+						<label>Card Number</label>
+						<input type="text" name="card_number" class="form-control" placeholder="Enter your credit card number">
+					</div>
+					<div class="form-group">
+						<label>Expiration Month</label>
+						<select class="form-control" name="exp_month">
+							<option value="1">January</option>
+							<option value="2">February</option>
+							<option value="3">March</option>
+							<option value="4">April</option>
+							<option value="5">May</option>
+							<option value="6">June</option>
+							<option value="7">July</option>
+							<option value="8">August</option>
+							<option value="9">September</option>
+							<option value="10">October</option>
+							<option value="11">November</option>
+							<option value="12">December</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label>Expiration Year</label>
+						<select class="form-control" name="exp_year">
+							{% for y in range(1900, 2016) %}
+								<option value="{{y}}">{{y}}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="form-group">
+						<label>CVV</label>
+						<input type="text" name="cvv" class="form-control" placeholder="Enter first name">
+					</div>
+
+					<h3>Review</h3>
+
+					<table class="table table-striped">
+						<tr class="cart-head">
+							<td>Product</td>
+							<td>Quantity</td>
+						</tr>
+						{% for product in products %}
+							<tr>
+								<td>{{product["product"].name}}</td>
+								<td>{{product.quantity}}</td>
+							</tr>
+						{% endfor %}
+						<tr>
+							<td colspan="4">Total: <strong>${{'{:2,.2f}'.format(total)}}</strong></td>
+						</tr>
+					</table>
+
+					<button type="submit" class="btn btn-primary">Submit Order</button>
+				</form>
+			</div>
+		</div>
+	</div>
 
 {% endblock %}
