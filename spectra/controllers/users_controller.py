@@ -134,6 +134,7 @@ def create():
 
     # Login!
     set_session(user)
+    flash("Welcome to Spectra!")
     return redirect(url_for('products_index'))
 
 #
