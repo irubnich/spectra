@@ -20,9 +20,9 @@ class Product(db.Model):
         self.inventory = inventory
         self.promotion = promotion
         self.image = image
-        
+
     def promotional_price(self):
-        return format((self.price - (self.price * self.promotion)), '.2f')
+        return '{:2,.2f}'.format(self.price - (self.price * self.promotion))
 
     def __repr__(self):
         return '<Product %r>' % self.name
