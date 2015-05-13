@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+                <form action="{{url_for('place_rating')}}" method="post">
+                    <h3>Rate</h3>
+
+                        <label>Name</label>
+                        <input type="radio" name="rating_type" value="1">Satisfied                                          
+                        <input type="radio" name="rating_type" value="0">
+                        Dissatisfied
+                        <input type="hidden" name="order_id" value= "{{order_id}}">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+{% endblock %}

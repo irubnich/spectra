@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<h1>Ratings</h1>
+{% if user_type == 'client' %}
+    <ul>
+    {% for order in orders %}
+        <li>
+        User: 
+        Order: 
+        {{order.id}}
+        Client:
+        {{order.client_id}}
+        <a href="{{url_for('rate', order_id=order.id)}}">Rate</a> &bull;
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% if user_type == 'salesperson' %}
+    <ul>
+    {% for order in orders %}
+        <li>
+        User: 
+        Order: 
+        {{order.id}}
+        Client:
+        {{order.client_id}}
+        <a href="{{url_for('rate', order_id=order.id)}}">Rate</a> &bull;
+    {% endfor %}
+    </ul>
+{% endif %}
+
+
+{% endblock %}
+
