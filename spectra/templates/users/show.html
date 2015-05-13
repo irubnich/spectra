@@ -1,5 +1,60 @@
-<h1>User #{{user.id}}</h1>
-First Name: {{user.first_name}}
-Last Name: {{user.last_name}}
-Email: {{user.email}}
-Password: {{user.password}}
+{% extends "layout.html" %}
+
+
+{% block body %}
+    <style>
+        .show {
+            width: 500px;
+        }
+        .flash {
+            width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+
+    <div class="container show">
+		<div class="row">
+			<div class="col-md-12">
+				<h1>{{user.type}} #{{user.id}}</h1>
+                        
+                <div class="form-group">
+                    <label>First Name : {{user.first_name}}</label>
+                </div>
+                <div class="form-group">
+                    <label>Last Name : {{user.last_name}}</label>
+                </div>
+                <div class="form-group">
+                    <label>E-mail : {{user.email}}</label>
+                </div>
+                <br>
+                <form action="{{url_for('edit', id=user.id)}}" method="get">
+                    <button type="submit" class="btn btn-primary">Edit Profile</button>
+				</form>
+                <br>
+                {% if user.type == 'client' %}
+                    <form action="{{url_for('fire', id=user.id)}}" method="post">
+                        <button type="submit" class="btn btn-primary">Delete Client</button>
+                    </form>
+                    <br>
+                    {% if user.active %}
+                        <form action="{{url_for('blacklist', id=user.id)}}" method="post">
+                            <button type="submit" class="btn btn-primary">Blacklist Client</button>
+                        </form>
+                    {% else %}
+                        <form action="{{url_for('blacklist', id=user.id)}}" method="post">
+                            <button type="submit" class="btn btn-primary">Remove Client from blacklist</button>
+                        </form>
+                    
+                    {% endif %}
+                {% endif %}
+                {% if (user.type == 'manager'  or user.type == 'salesperson')%}
+                    <form action="{{url_for('fire', id=user.id)}}" method="post">
+                            
+                            <button type="submit" class="btn btn-primary">Fire employee</button>
+                    </form>
+                {% endif %}
+                
+			</div>
+		</div>
+	</div>
+{% endblock %}

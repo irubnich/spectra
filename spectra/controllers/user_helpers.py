@@ -8,9 +8,13 @@ def is_logged_in():
 
 def set_session(user):
     session["user"] = {
-        "id": user.id
+        "id": user.id,
+        "type": user.type
     }
 
+def is_allowed():
+    return session.has_key("user")
+    
 def is_client_active(client):
     salesperson_entry = SalespeopleClient.query.filter(SalespeopleClient.client_id == client.id).first()
     if not salesperson_entry:

@@ -59,15 +59,6 @@ def index():
     return render_template("users/index.html", users=users)
 
 #
-# Show a User
-#
-
-@app.route("/users/<int:id>")
-def show(id):
-    user = User.query.get_or_404(id)
-    return render_template("users/show.html", user=user)
-
-#
 # Create a User
 #
 
@@ -150,17 +141,70 @@ def edit(id):
 def update(id):
     user = User.query.get_or_404(id)
     user.email = request.form["email"]
+    user.first_name = request.form["first_name"]
+    user.last_name = request.form["last_name"]
     db.session.add(user)
     db.session.commit()
-    return redirect(url_for('show', id=id))
+    flash("Changes to your profile has been made!")
+    return redirect(url_for('products_index'))
 
 #
 # Delete a User
 #
 
-@app.route("/users/<int:id>/destroy")
-def destroy(id):
-    user = User.query.get_or_404(id)
-    db.session.delete(user)
-    db.session.commit()
-    return redirect(url_for('index'))
+#@app.route("/users/<int:id>/destroy")
+#def destroy(id):
+#    user = User.query.get_or_404(id)
+#    db.session.delete(user)
+#    db.session.commit()
+#    return redirect(url_for('index'))
+
+#
+#   Reset Password
+#
+
+@app.route("/users/reset_password", methods=["GET"])
+def reset_password():
+    return render_template("users/reset_password.html")
+
+@app.route("/users/reset_password", methods=["POST"])
+def new_password():
+    email = request.form["email"]
+    old_password = request.form["old_password"]
+    new_password = request.form["new_password"]
+    confirm_password = request.form["confirm_password"]
+
+    # Validation
+    required_fields = [email, old_password, new_password, confirm_password]
+    trimmed = [i.strip() for i in required_fields]
+    if "" in trimmed:
+        flash("You're missing required fields.")
+        return redirect(url_for('reset_password'))
+
+    # Email validation
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        flash("Your email address is invalid.")
+        return redirect(url_for('reset_password'))
+
+    old_user = User.query.filter(User.email == email).first()
+    if not old_user:
+        flash("Invalid user.")
+        return redirect(url_for('reset_password'))
+    
+    old_password = hashlib.sha512(old_password).hexdigest()
+
+    # Old Password matching
+    if old_password != old_user.password:
+        flash("Your old password does not match the provided e-mail.")
+        return redirect(url_for('reset_password'))
+        
+    # Password matching
+    if new_password != confirm_password:
+        flash("Your passwords do not match.")
+        return redirect(url_for('reset_password'))
+        
+    password = hashlib.sha512(new_password).hexdigest()
+    old_user.password = password
+    db.session.commit()        
+    flash("Reset password is successful.")
+    return redirect(url_for("login"))
