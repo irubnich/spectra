@@ -10,7 +10,7 @@
                 <li><a href="{{url_for('new_complaint')}}">Create Complaint</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/">{{session["user"]["id"]}}</a></li>
+                <li><a href="{{url_for('rating_index')}}">Rate Past Orders</a></li>
                 <li><a href="{{url_for('logout')}}">Logout</a></li>
             </ul>
         {% endif %}
