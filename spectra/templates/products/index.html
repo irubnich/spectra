@@ -1,34 +1,65 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<style>
-    .boxed {
-      border: 1px solid green ;
-      float:left;
-      padding:5px;
-    }
-</style>
+    <style>
+        .product {
+            display: inline-block;
+            width: 33%;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .product .img {
+            max-width: 300px;
+            margin-bottom: 6px;
+        }
+        .product a {
+            text-decoration: none;
+        }
+        .product .attributes {
+            line-height: 1.5em;
+        }
+        .product button {
+            margin-top: 4px;
+        }
+    </style>
 
-    <p><a href="{{url_for('products_index')}}">show all</a></p>
-    <p>Filter by:
-        {% for category in categories %}
-            <a href="{{url_for('products_index', category=category[0])}}">{{category[0]}}</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        {% endfor %}
-    </p>
-    <h1>List of products:</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Products</h1>
 
-    {% for product in products %}
+                <h3>Filter By</h3>
+                <div class="btn-group" role="group">
+                    <a class="btn btn-default" href="{{url_for('products_index')}}" role="button">All</a>
+                    {% for category in categories %}
+                        <a class="btn btn-default" href="{{url_for('products_index', category=category[0])}}" role="button">{{category[0]}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 
-        <div class="boxed">
-            <a href="{{url_for('show_product', id=product.id)}}"><img src="{{product.image}}" alt="For more details" width="280" height="200"><br><br>{{product.name}}</a>
-            <div style='float:right'><strong><strike>${{product.price}}</strike>&nbsp;&nbsp;&nbsp;&nbsp;<i>now:  </i><ins>${{product.promotional_price()}}</ins></strong></div><br><br>
-			<div style="text-align:center">
-				<form action="{{url_for('add_to_cart', id=product.id, quantity=1, return_to_home=True)}}" method="post">
-					<input type="hidden" value="1" name="quantity">
-					<input type="submit" value="Add to Cart">
-				</form>
-			</div>
-		</div>
-
-    {% endfor %}
+        <div class="row">
+            <div class="col-md-12">
+                {% for product in products %}
+                    <div class="product">
+                        <a href="{{url_for('show_product', id=product.id)}}">
+                            <img class="img" src="{{product.image}}"><br>
+                            {{product.name}}
+                        </a>
+                        <div class="attributes">
+                            <strong>
+                                <strike>${{'{:2,.2f}'.format(product.price)}}</strike><br>
+                                <em>now:</em>
+                                ${{product.promotional_price()}}
+                            </strong>
+                        </div>
+                        <form action="{{url_for('add_to_cart', id=product.id, quantity=1, return_to_home=True)}}" method="post">
+                            <input type="hidden" value="1" name="quantity">
+                            <button type="submit" class="btn btn-primary">Add To Cart</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
