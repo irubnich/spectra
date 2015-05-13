@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block body %}
+	<h1>Edit Product</h1>
+	<form action="{{url_for('confirm_edit_product')}}" method="post">	
+	<input type="hidden" name="product_id" value="{{product.id}}">
+	{% if user_type == "manager" %}
+	{{product.name}}<br>
+	{{product.description}}<br>
+	{{product.price}}<br>
+	{{product.category}}<br>
+	{{product.inventory}}<br>
+	Promotion: <input type="text" name="promotion" value="{{product.promotion}}"><br>
+	{{product.image}}<br>	
+	{% endif %}
+	
+	{% if user_type == "director" %}
+
+	Name: <input type="text" name="product_name" value="{{product.name}}"><br>
+	Description: <input type="text" name="description" value="{{product.description}}"><br>
+	Price: <input type="text" name="price" value="{{product.price}}"><br>
+	Category: <input type="text" name="category" value="{{product.category}}"><br>
+	Inventory: <input type="text" name="inventory" value="{{product.inventory}}"><br>
+	Promotion: <input type="text" name="promotion" value="{{product.promotion}}"><br>
+	Image: <input type="text" name="image" value="{{product.image}}"><br>
+
+	{% endif %}
+	<button type="submit">Submit</button>
+	</form>
+{% endblock %}
