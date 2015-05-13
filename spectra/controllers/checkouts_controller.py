@@ -92,4 +92,4 @@ def order_confirm(id):
 	order_items = OrderProduct.query.filter(OrderProduct.order_id == id).all() # = Select all products from OrderProduct in recent order so we can list them
 	grouped_products = map(lambda item: { "product": Product.query.get(item.product_id), "quantity": item.quantity }, order_items)
 
-	return render_template("checkout/confirm.html", products=grouped_products, total=order.total, salesperson=salesperson.name())
+	return render_template("checkout/confirm.html", order=order, products=grouped_products, salesperson=salesperson.name())

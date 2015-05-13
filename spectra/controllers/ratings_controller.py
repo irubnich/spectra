@@ -21,10 +21,17 @@ def rating_index():
         orders = Order.query.filter(Order.client_id == user.id).all()
     elif user.type == "salesperson":
         orders = Order.query.filter(Order.salesperson_id == user.id).all()
+
     return render_template("ratings/index.html", orders=orders, user_type=user.type)
 
 @app.route("/ratings/<int:order_id>/rate")
 def rate(order_id):
+    # Can we rate this order?
+    ratings = Rating.query.filter(Rating.order_id == order_id).all()
+    if len(ratings) > 0:
+        flash("You can't rate an order that's already been rated.")
+        return redirect(url_for('products_index'))
+
     return render_template("ratings/rate.html", order_id=order_id)
 
 
@@ -33,6 +40,13 @@ def place_rating():
     user = User.query.get(session["user"]["id"])
     order_id = request.form["order_id"] # "order_id" is from the form
     order = Order.query.filter(Order.id == order_id).first()
+
+    # Last check for if we can rate this order
+    ratings = Rating.query.filter(Rating.order_id == order.id).all()
+    if len(ratings) > 0:
+        flash("You can't rate an order that's already been rated.")
+        return redirect(url_for('products_index'))
+
     if user.type == "client":
         rater_id = order.salesperson_id
     elif user.type == "salesperson":
@@ -47,9 +61,3 @@ def place_rating():
     score = user.rate(rater_id, order_id, rating_type)
     flash("Thank you for rating!")
     return redirect(url_for('products_index'))
-
-
-
-
-
-
