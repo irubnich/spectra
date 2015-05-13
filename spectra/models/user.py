@@ -41,7 +41,7 @@ class User(db.Model):
         else:
             return 5.0
 
-    def rate(self, rater_id, order_id, rating_type):
+    def rate(self, user_being_rated, rater_id, order_id, rating_type):
         # Calculate new rating
         positive_ratings = Rating.query.filter(Rating.user_id == self.id).filter(Rating.rating_type == True).all()
         all_ratings = Rating.query.filter(Rating.user_id == self.id).all()
@@ -50,7 +50,7 @@ class User(db.Model):
         else:
             new_rating = (float(len(positive_ratings)) / (len(all_ratings) + 1)) * 5
 
-        new_rating = Rating(self.id, rater_id, order_id, rating_type, new_rating, datetime.now())
+        new_rating = Rating(user_being_rated, rater_id, order_id, rating_type, new_rating, datetime.now())
         db.session.add(new_rating)
         db.session.commit()
         return new_rating
