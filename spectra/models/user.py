@@ -5,6 +5,7 @@ from spectra.models.rating import Rating
 from spectra.models.complaint import Complaint
 import hashlib
 from datetime import datetime
+from IPython import embed
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -43,8 +44,9 @@ class User(db.Model):
 
     def rate(self, user_being_rated, rater_id, order_id, rating_type):
         # Calculate new rating
-        positive_ratings = Rating.query.filter(Rating.user_id == self.id).filter(Rating.rating_type == True).all()
-        all_ratings = Rating.query.filter(Rating.user_id == self.id).all()
+        positive_ratings = Rating.query.filter(Rating.user_id == user_being_rated).filter(Rating.rating_type == True).all()
+        all_ratings = Rating.query.filter(Rating.user_id == user_being_rated).all()
+
         if rating_type:
             new_rating = ((float(len(positive_ratings) + 1)) / (len(all_ratings) + 1)) * 5
         else:
@@ -52,6 +54,22 @@ class User(db.Model):
 
         new_rating = Rating(user_being_rated, rater_id, order_id, rating_type, new_rating, datetime.now())
         db.session.add(new_rating)
+
+        # Rewards and penalties
+        user = User.query.get(user_being_rated)
+        num_negative_ratings = len(all_ratings) - len(positive_ratings)
+        if user.type == "client":
+            if rating_type and (len(positive_ratings) + 1) % 3 == 0:
+                user.discount = 0.05
+            elif not rating_type and (num_negative_ratings + 1) % 3 == 0:
+                user.discount = -0.05
+
+        if user.type == "salesperson":
+            if rating_type and (len(positive_ratings) + 1) % 3 == 0:
+                user.commission += 0.05
+            elif not rating_type and (num_negative_ratings + 1) % 3 == 0:
+                user.commission -= 0.05
+
         db.session.commit()
         return new_rating
 
