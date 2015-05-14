@@ -2,26 +2,6 @@
 
 {% block body %}
     <style>
-        .boxed {
-            border: 1px solid green ;
-            padding:5px;
-            overflow:hidden;
-            width: 99%
-        }
-
-        .left {
-            float: left;
-            width: 59%;
-        }
-        .right {
-            overflow: hidden;
-            width: 40%;
-        }
-
-        #parent {
-            margin: 0;
-            width: 99%;
-        }
     </style>
 
     <div class="container">
@@ -44,15 +24,20 @@
                         <tr>
                             <td>{{product["product"].name}}</td>
                             <td>{{product.quantity}}</td>
-                            <td>{{product["product"].price * product.quantity}}</td>
+                            <td>${{'{:2,.2f}'.format(product["product"].price * product.quantity)}}</td>
                         </tr>
                     {% endfor %}
                     <tr>
-                        <td colspan="4">Total: <strong>${{'{:2,.2f}'.format(total)}}</strong></td>
+                        <td colspan="4">
+                            Total: <strong>${{'{:2,.2f}'.format(order.total)}}</strong>
+                        </td>
                     </tr>
                 </table>
+
+                <h1>Rate Your Order</h1>
+                <p>Our salespeople appreciate your feedback. Please rate your order.</p>
+                <a class="btn btn-primary" href="{{url_for('rate', order_id=order.id)}}" role="button">Rate</a>
             </div>
         </div>
     </div>
-
 {% endblock %}

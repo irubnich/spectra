@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<style>
+    .ratings-head {
+        font-weight: bold;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Rate Past Orders</h1>
+            <table class="table table-striped">
+                <tr class="ratings-head">
+                    <td>Order ID</td>
+                    {% if user_type == "salesperson" %}
+                        <td>Placed By</td>
+                    {% endif %}
+                    <td>Date</td>
+                    <td>Rate</td>
+                </tr>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{order.id}}</td>
+                        {% if user_type == "salesperson" %}
+                            <td>{{order.client().name()}}</td>
+                        {% endif %}
+                        <td>{{order.date.strftime("%m/%d/%Y %X")}}</td>
+                        <td><a href="{{url_for('rate', order_id=order.id)}}">Rate</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

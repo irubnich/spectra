@@ -90,7 +90,11 @@
 							</tr>
 						{% endfor %}
 						<tr>
-							<td colspan="4">Total: <strong>${{'{:2,.2f}'.format(total)}}</strong></td>
+							<td colspan="4">
+								Subtotal: <strong>${{'{:2,.2f}'.format(subtotal)}}</strong><br>
+	                            Discount: <strong>${{'{:2,.2f}'.format(discount)}}</strong><br>
+	                            Total: <strong>${{'{:2,.2f}'.format(total)}}</strong>
+							</td>
 						</tr>
 					</table>
 

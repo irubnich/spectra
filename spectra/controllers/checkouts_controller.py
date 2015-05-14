@@ -24,7 +24,7 @@ def checkout_page():
 		return redirect(url_for('products_index'))
 
 	products = []
-	total = 0.0
+	subtotal = 0.0
 
 	# Make cookie into list of products to display
 	for cart_item in cart_items:
@@ -33,9 +33,14 @@ def checkout_page():
 			"product": db_product,
 			"quantity": cart_item["quantity"]
 		})
-		total += (db_product.price * int(cart_item["quantity"]))
+		subtotal += (db_product.price * int(cart_item["quantity"]))
 
-	return render_template("checkout/index.html", products=products, total=total)
+	# Calculate discount
+	user = User.query.get(session["user"]["id"])
+	discount = (subtotal * user.discount)
+	total = subtotal - discount
+
+	return render_template("checkout/index.html", subtotal=subtotal, discount=discount, products=products, total=total)
 
 @app.route("/checkout", methods=["POST"])
 def place_order():
@@ -48,7 +53,7 @@ def place_order():
 	# Build order from cookie
 	# and confirm inventory
 	products = session["cart"]["items"] # list of dictionaries
-	total = 0
+	subtotal = 0
 	for item in products:
 		db_product = Product.query.get(item["product"])
 		quantity = int(item["quantity"])
@@ -57,7 +62,11 @@ def place_order():
 			flash("There is not enough inventory remaining for {0}!".format(db_product.name))
 			return redirect(url_for("cart_index"))
 
-		total += (db_product.price * quantity)
+		subtotal += (db_product.price * quantity)
+
+	# Calculate discount
+	discount = (subtotal * user.discount)
+	total = subtotal - discount
 
 	discount = user.discount
 	user.discount = 0 #Discounts are one time use
@@ -81,7 +90,6 @@ def place_order():
 
 	# Clear cart!
 	session["cart"]["items"] = []
-
 	return redirect(url_for('order_confirm', id=order.id))
 
 @app.route("/checkout/confirm/<int:id>")
@@ -92,4 +100,4 @@ def order_confirm(id):
 	order_items = OrderProduct.query.filter(OrderProduct.order_id == id).all() # = Select all products from OrderProduct in recent order so we can list them
 	grouped_products = map(lambda item: { "product": Product.query.get(item.product_id), "quantity": item.quantity }, order_items)
 
-	return render_template("checkout/confirm.html", products=grouped_products, total=order.total, salesperson=salesperson.name())
+	return render_template("checkout/confirm.html", order=order, products=grouped_products, salesperson=salesperson.name())

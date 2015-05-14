@@ -10,7 +10,6 @@ def init_cart():
         session["cart"] = {
             "items": []
         }
-    print session["cart"]
 
 @app.route("/")
 def products_index():
@@ -18,8 +17,8 @@ def products_index():
     if not valid:
         flash(error)
         return redirect(url_for('login'))
-   
-    categories = db.session.query(Product.category.distinct()).all()    
+
+    categories = db.session.query(Product.category.distinct()).all()
     category = request.args.get('category')
     if category:
         products = Product.query.filter_by(category=category).all()
@@ -28,7 +27,7 @@ def products_index():
 
     return render_template("products/index.html", categories=categories, products=products)
 
-    
+
 #
 # Show a product
 #
@@ -52,7 +51,7 @@ def add_to_cart(id, quantity):
 
     product = Product.query.get_or_404(id)
     quantity = request.form["quantity"]
-	
+
     item_updated = False
     for item in session["cart"]["items"]:
         if item["product"] == product.id:
@@ -67,8 +66,8 @@ def add_to_cart(id, quantity):
             "quantity": quantity
         })
     flash("Successfully added {0} to cart.".format(product.name))
-    
+
     if request.args.get('return_to_home'):
         return redirect(url_for("products_index"))
-        
+
     return redirect(url_for("show_product", id=product.id))
