@@ -22,11 +22,16 @@ def manager_dashboard(id):
     user = User.query.get(session["user"]["id"])
     salespeople = sorted(user.get_salespeople(), key=lambda x: x.rating(), reverse=True)
 
+    sum_ratings = 0.0
+    for sp in salespeople:
+        sum_ratings += sp.rating()
+    rating = sum_ratings / len(salespeople)
+
     salesperson = None
     if id:
         salesperson = User.query.get(id)
 
-    return render_template("dashboards/manager.html", salespeople=salespeople, salesperson=salesperson)
+    return render_template("dashboards/manager.html", salespeople=salespeople, salesperson=salesperson, rating=rating)
 
 @app.route("/dashboards/manager/unsuspend/<int:id>")
 def manager_unsuspend_salesperson(id):
