@@ -46,15 +46,59 @@ def create_product():
 
 @app.route("/product_management/new_product.html", methods=["POST"])
 def confirm_product():
-	user = User.query.get(session["user"]["id"])
-	product_name = request.form["product_name"]
-	description = request.form["reason"]
-	
-	product = Product(product_name, description, 9999999, "No Category", 0, 0.0, "")
-	db.session.add(product)
-	db.session.commit()
- 
-	return redirect(url_for('edit_product_page', id=product.id))
+	#user = User.query.get(session["user"]["id"])
+    product_name = request.form["product_name"]
+    description = request.form["description"]
+    price = request.form["price"]
+    category = request.form["category"]
+    inventory = request.form["inventory"]
+    promotion = request.form["promotion"] 
+    image_url = request.form["image_url"]
+
+    # Validation
+
+    required_fields = [product_name, description, price, category, inventory, promotion, image_url]
+    trimmed = [i.strip() for i in required_fields]
+    if "" in trimmed:
+        flash("You're missing required fields.")
+        return redirect(url_for('confirm_product'))
+
+    try:
+        price = float(price)
+    except ValueError:
+        flash("Invalid conversion for price")
+        return redirect(url_for('confirm_product'))
+
+    if price < 0:
+        flash("Invalid entry for price")
+        return redirect(url_for('confirm_product'))
+
+    try:
+        inventory = int(inventory)
+    except ValueError:
+        flash("Invalid conversion for inventory")
+        return redirect(url_for('confirm_product'))
+
+    if inventory < 0:
+        flash("Invalid entry for inventory")
+        return redirect(url_for('confirm_product'))
+
+    try:
+        promotion = float(promotion)
+    except ValueError:
+        flash("Invalid conversion for promotion")
+        return redirect(url_for('confirm_product'))
+
+    if promotion < 0:
+        flash("Invalid entry for promotion")
+        return redirect(url_for('confirm_product'))
+
+    product = Product(product_name, description, price, category, inventory, promotion, image_url)
+    db.session.add(product)
+    db.session.commit()
+
+    flash("Product created!")
+    return redirect(url_for('product_management_index'))
 
 @app.route("/product_management/<int:id>/edit_product.html")
 def edit_product_page(id):
@@ -92,4 +136,4 @@ def confirm_edit_product():
 
 
 
-    
+
