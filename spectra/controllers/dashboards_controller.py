@@ -10,7 +10,7 @@ def director_dashboard():
 @app.route("/dashboards/manager/<int:id>")
 def manager_dashboard(id):
     user = User.query.get(session["user"]["id"])
-    salespeople = user.get_salespeople()
+    salespeople = sorted(user.get_salespeople(), key=lambda x: x.rating(), reverse=True)
 
     salesperson = None
     if id:
