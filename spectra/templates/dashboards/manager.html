@@ -1,3 +1,66 @@
 {% extends "layout.html" %}
 {% block body %}
+    <style>
+        thead {
+            font-weight: bold;
+        }
+        .badge {
+            float: right;
+        }
+    </style>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Manager Dashboard</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <ul class="nav nav-pills nav-stacked">
+                    {% for sp in salespeople %}
+                        <li class="{{"active" if sp.id == salesperson.id}}">
+                            <a href="{{url_for('manager_dashboard', id=sp.id)}}">{{sp.name()}}
+                                <span class="badge">{{sp.rating()}}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-8">
+                {% if not salesperson %}
+                    <em>Select a salesperson on your left to begin.</em>
+                {% else %}
+                    <table class="table table-hover">
+                        <thead>
+                            <td>Name</td>
+                            <td># of Clients</td>
+                            <td>Rating</td>
+                        </thead>
+                        <tr>
+                            <td>{{salesperson.name()}}</td>
+                            <td>{{salesperson.get_clients()|length}}
+                            <td>{{salesperson.rating()}}</td>
+                        </tr>
+                    </table>
+
+                    <h2>Clients</h2>
+                    <table class="table table-hover">
+                        <thead>
+                            <td>Name</td>
+                            <td># of Orders</td>
+                            <td>Rating</td>
+                        </thead>
+                        {% for client in salesperson.get_clients() %}
+                            <tr>
+                                <td>{{client.name()}}</td>
+                                <td>{{client.get_orders()|length}}
+                                <td>{{client.rating()}}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

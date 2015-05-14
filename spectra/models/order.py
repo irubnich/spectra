@@ -1,6 +1,5 @@
 from spectra.models import db
 from spectra.models.rating import Rating
-from spectra.models.user import User
 
 class Order(db.Model):
 	__tablename__ = 'orders'
