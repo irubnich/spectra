@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block body %}
+	<h1>Create Product</h1>
+	
+	<select>
+	{% for suggestion in suggestions %}
+	<option value="{{suggestion.name}}" name="suggest">{{suggestion.name}}</option>
+	{% endfor %}
+	</select>
+	
+	<form action="{{url_for('confirm_product')}}" method="post">
+	Product Name: <input type="text" name="product_name">
+	Reason for Product: <input type="text" name="reason">
+	<button type="submit">Submit</button>
+	</form>
+{% endblock %}

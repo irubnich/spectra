@@ -1,5 +1,84 @@
-<h1>User #{{user.id}}</h1>
-First Name: {{user.first_name}}
-Last Name: {{user.last_name}}
-Email: {{user.email}}
-Password: {{user.password}}
+{% extends "layout.html" %}
+
+
+{% block body %}
+    <style>
+        .show {
+            width: 500px;
+        }
+        .flash {
+            width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+
+    <div class="container show">
+		<div class="row">
+			<div class="col-md-12">
+				<h1>{{user.type}} #{{user.id}}</h1>
+                        
+                <div class="form-group">
+                    <label>First Name : {{user.first_name}}</label>
+                </div>
+                <div class="form-group">
+                    <label>Last Name : {{user.last_name}}</label>
+                </div>
+                <div class="form-group">
+                    <label>E-mail : {{user.email}}</label>
+                </div>
+                <br>
+                <form action="{{url_for('edit', id=user.id)}}" method="get">
+                    <button type="submit" class="btn btn-info">Edit Profile</button>
+				</form>
+                <br>
+                {% if user.type == 'client' %}
+                    {% if user.active == 1 %}
+                        <form action="{{url_for('blacklist', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Blacklist Client</button>
+                        </form>
+                    {% else %}
+                        <form action="{{url_for('blacklist', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Remove Client from blacklist</button>
+                        </form>
+                    
+                    {% endif %}
+                    <br>
+                    <form action="{{url_for('fire', id=user.id)}}">
+                        <button type="submit" class="btn btn-danger">Delete Client</button>
+                    </form>
+                {% endif %}
+                
+                {% if user.active == 1 %}
+                    {% if (user.type == 'salesperson') %}
+                        <form action="{{url_for('promote_demote', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Promote to Manager</button>
+                        </form>
+                    {% endif %}
+                    {% if (user.type == 'manager') %}
+                        <form action="{{url_for('promote_demote', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Demote to Salesperson</button>
+                        </form>
+                    {% endif %}
+                
+                {% else %}
+                    {% if (user.type == 'salesperson') %}
+                        <form action="{{url_for('unsuspend', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Unsuspend Salesperson</button>
+                        </form>
+                    {% endif %}    
+                    {% if (user.type == 'manager') %}
+                        <form action="{{url_for('unsuspend', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Unsuspend Manager</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+                <br>
+                {% if (user.type == 'manager'  or user.type == 'salesperson') %}
+                    <form action="{{url_for('fire', id=user.id)}}">
+                        <button type="submit" class="btn btn-danger">Fire employee</button>
+                    </form>
+                {% endif %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

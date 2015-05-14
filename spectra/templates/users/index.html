@@ -1,12 +1,44 @@
-<h1>List of users:</h1>
-<ul>
-{% for user in users %}
-    <li>
-        {{user.email}} &bull;
-        <a href="{{url_for('edit', id=user.id)}}">Edit</a> &bull;
-        <a href="{{url_for('destroy', id=user.id)}}">Delete</a>
-    </li>
-{% endfor %}
-</ul>
+{% extends "layout.html" %}
 
-<a href="{{url_for('new')}}">Create New User</a>
+{% block body %}
+    <style>
+        .user_mgmt {
+            width: 100%;
+        }
+        .flash {
+            width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+
+ <div class="container user_mgmt">
+		<div class="row">
+			<div class="col-md-6">
+				<h1>Users</h1>
+                {% for user in users %}
+                    <li>
+                        {{user.email}} &bull;
+                        <a href="{{url_for('show', id=user.id)}}">Show Profile</a> &bull;
+                    </li>
+                {% endfor %}
+                
+                <br><br>
+                <a class="btn btn-success" href="{{url_for('hire')}}" role="button">Hire a new employee</a>
+                
+                
+			</div>
+            <div class="col-md-6">
+				<h1>Products</h1>
+                {% for product in products %}
+                    <li>
+                        {{product.name}} &bull;
+                        <a href="{{url_for('show', id=user.id)}}">Show Profile</a> &bull;
+                    </li>
+                {% endfor %}
+                
+                
+			</div>
+            
+		</div>
+	</div>
+{% endblock %}
