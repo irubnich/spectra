@@ -127,7 +127,7 @@ def unsuspend(id):
             db.session.add(user)
             db.session.commit()
             flash("Salesperson is now active.")
-        else:
+        if (user.type == 'manager'):
             user.active = 1
             db.session.add(user)
             db.session.commit()
@@ -153,7 +153,7 @@ def promote_demote(id):
         db.session.add(user)
         db.session.commit()
         flash("Salesperson has been promoted to Manager.")
-    else:
+    if (user.type == 'manager'):
         user.type = 'salesperson'
         db.session.add(user)
         db.session.commit()
@@ -178,7 +178,7 @@ def blacklist(id):
         db.session.add(user)
         db.session.commit()
         flash("Client has been blacklisted.")
-    else:
+    if (user.type == 'client' and user.active == 0):
         user.active = '1'
         db.session.add(user)
         db.session.commit()

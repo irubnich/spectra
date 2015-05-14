@@ -53,7 +53,8 @@
                         <form action="{{url_for('promote_demote', id=user.id)}}">
                             <button type="submit" class="btn btn-warning">Promote to Manager</button>
                         </form>
-                    {% else %}
+                    {% endif %}
+                    {% if (user.type == 'manager') %}
                         <form action="{{url_for('promote_demote', id=user.id)}}">
                             <button type="submit" class="btn btn-warning">Demote to Salesperson</button>
                         </form>
@@ -64,7 +65,8 @@
                         <form action="{{url_for('unsuspend', id=user.id)}}">
                             <button type="submit" class="btn btn-warning">Unsuspend Salesperson</button>
                         </form>
-                    {% else %}
+                    {% endif %}    
+                    {% if (user.type == 'manager') %}
                         <form action="{{url_for('unsuspend', id=user.id)}}">
                             <button type="submit" class="btn btn-warning">Unsuspend Manager</button>
                         </form>
