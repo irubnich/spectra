@@ -24,11 +24,13 @@
                         <tr>
                             <td>{{product["product"].name}}</td>
                             <td>{{product.quantity}}</td>
-                            <td>{{product["product"].price * product.quantity}}</td>
+                            <td>${{'{:2,.2f}'.format(product["product"].price * product.quantity)}}</td>
                         </tr>
                     {% endfor %}
                     <tr>
-                        <td colspan="4">Total: <strong>${{'{:2,.2f}'.format(order.total)}}</strong></td>
+                        <td colspan="4">
+                            Total: <strong>${{'{:2,.2f}'.format(order.total)}}</strong>
+                        </td>
                     </tr>
                 </table>
 
@@ -38,5 +40,4 @@
             </div>
         </div>
     </div>
-
 {% endblock %}
