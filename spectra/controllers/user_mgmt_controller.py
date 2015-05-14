@@ -83,7 +83,10 @@ def new_employee():
     db.session.commit()
     
     if (position_applied == 'salesperson'): 
-        manager = User.query.filter(User.first_name == assigned_manager).filter(User.type == 'manager').first()
+        manager = User.query.get(assigned_manager)
+        if manager.type != "manager":
+            raise BaseException("Can't assign a non-manager as a manager...")
+
         sales_mgr = Manager_salespeople(manager.id, user.id)
         db.session.add(sales_mgr)
         db.session.commit()
