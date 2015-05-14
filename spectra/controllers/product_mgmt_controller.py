@@ -88,3 +88,8 @@ def confirm_edit_product():
 		product.name = request.form["promotion"]		
 	db.session.commit()
 	return render_template("product_management/index.html")
+
+
+
+
+    

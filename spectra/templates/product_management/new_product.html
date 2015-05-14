@@ -1,17 +1,41 @@
 {% extends "layout.html" %}
 
 {% block body %}
-	<h1>Create Product</h1>
-	
-	<select>
-	{% for suggestion in suggestions %}
-	<option value="{{suggestion.name}}" name="suggest">{{suggestion.name}}</option>
-	{% endfor %}
-	</select>
-	
-	<form action="{{url_for('confirm_product')}}" method="post">
-	Product Name: <input type="text" name="product_name">
-	Reason for Product: <input type="text" name="reason">
-	<button type="submit">Submit</button>
-	</form>
+<style>
+        .login {
+            width: 500px;
+        }
+        .flash {
+            width: 500px;
+            margin: 0 auto;
+        }
+</style>
+
+    <div class="container login">
+        <div class="row">
+            <div class="col-md-12">
+            	<h1>Create Product</h1>
+            	
+            	<select>
+                    <option value="">No Suggestion</option>
+                	{% for suggestion in suggestions %}
+                	<option value="{{suggestion.name}}" name="suggest">{{suggestion.name}}</option>
+                	{% endfor %}
+            	</select>
+            	
+            	<form action="{{url_for('confirm_product')}}" method="post">
+
+                        Name: <input type="text" name="product_name" value="{{product.name}}"><br>
+                        Description: <input type="text" name="description" value="{{product.description}}"><br>
+                        Price: <input type="text" name="price" value="{{product.price}}"><br>
+                        Category: <input type="text" name="category" value="{{product.category}}"><br>
+                        Inventory: <input type="text" name="inventory" value="{{product.inventory}}"><br>
+                        Promotion: <input type="text" name="promotion" value="{{product.promotion}}"><br>
+                        Image: <input type="text" name="image" value="{{product.image}}"><br>
+
+                        <button type="submit">Submit</button>
+            	</form>
+            </div>
+        </div>
+    </div>
 {% endblock %}
