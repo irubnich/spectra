@@ -124,15 +124,11 @@ def unsuspend(id):
     if (user.active == 0):
         if (user.type == 'salesperson'):
             user.active = 1
-            db.session.add(user)
-            db.session.commit()
             flash("Salesperson is now active.")
-        if (user.type == 'manager'):
+        elif (user.type == 'manager'):
             user.active = 1
-            db.session.add(user)
-            db.session.commit()
             flash("Manager is now active.")
-       
+    db.session.commit()   
     return redirect(url_for('show', id=user.id))
     
 #
@@ -150,15 +146,12 @@ def promote_demote(id):
     
     if (user.type == 'salesperson'):
         user.type = 'manager'
-        db.session.add(user)
-        db.session.commit()
         flash("Salesperson has been promoted to Manager.")
-    if (user.type == 'manager'):
+    elif (user.type == 'manager'):
         user.type = 'salesperson'
-        db.session.add(user)
-        db.session.commit()
         flash("Manager has been demoted to Salesperson.")
-        
+    
+    db.session.commit()   
     return redirect(url_for('show', id=user.id))
 
 #
@@ -175,13 +168,10 @@ def blacklist(id):
     
     if (user.type == 'client' and user.active == 1):
         user.active = '0'
-        db.session.add(user)
-        db.session.commit()
         flash("Client has been blacklisted.")
-    if (user.type == 'client' and user.active == 0):
+    elif (user.type == 'client' and user.active == 0):
         user.active = '1'
-        db.session.add(user)
-        db.session.commit()
         flash("Client has been removed from the blacklist.")
-        
+    
+    db.session.commit()
     return redirect(url_for('show', id=user.id))
