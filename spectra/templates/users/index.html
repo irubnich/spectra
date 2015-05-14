@@ -3,7 +3,7 @@
 {% block body %}
     <style>
         .user_mgmt {
-            width: 500px;
+            width: 100%;
         }
         .flash {
             width: 500px;
@@ -12,8 +12,8 @@
     </style>
 
  <div class="container user_mgmt">
-		<div class="col">
-			<div class="row-md-12">
+		<div class="row">
+			<div class="col-md-6">
 				<h1>Users</h1>
                 {% for user in users %}
                     <li>
@@ -22,8 +22,23 @@
                     </li>
                 {% endfor %}
                 
+                <br><br>
+                <a class="btn btn-success" href="{{url_for('hire')}}" role="button">Hire a new employee</a>
+                
                 
 			</div>
+            <div class="col-md-6">
+				<h1>Products</h1>
+                {% for product in products %}
+                    <li>
+                        {{product.name}} &bull;
+                        <a href="{{url_for('show', id=user.id)}}">Show Profile</a> &bull;
+                    </li>
+                {% endfor %}
+                
+                
+			</div>
+            
 		</div>
 	</div>
 {% endblock %}

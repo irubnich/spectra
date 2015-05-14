@@ -28,32 +28,54 @@
                 </div>
                 <br>
                 <form action="{{url_for('edit', id=user.id)}}" method="get">
-                    <button type="submit" class="btn btn-primary">Edit Profile</button>
+                    <button type="submit" class="btn btn-info">Edit Profile</button>
 				</form>
                 <br>
                 {% if user.type == 'client' %}
-                    <form action="{{url_for('fire', id=user.id)}}" method="post">
-                        <button type="submit" class="btn btn-primary">Delete Client</button>
-                    </form>
-                    <br>
-                    {% if user.active %}
-                        <form action="{{url_for('blacklist', id=user.id)}}" method="post">
-                            <button type="submit" class="btn btn-primary">Blacklist Client</button>
+                    {% if user.active == 1 %}
+                        <form action="{{url_for('blacklist', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Blacklist Client</button>
                         </form>
                     {% else %}
-                        <form action="{{url_for('blacklist', id=user.id)}}" method="post">
-                            <button type="submit" class="btn btn-primary">Remove Client from blacklist</button>
+                        <form action="{{url_for('blacklist', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Remove Client from blacklist</button>
                         </form>
                     
                     {% endif %}
-                {% endif %}
-                {% if (user.type == 'manager'  or user.type == 'salesperson')%}
-                    <form action="{{url_for('fire', id=user.id)}}" method="post">
-                            
-                            <button type="submit" class="btn btn-primary">Fire employee</button>
+                    <br>
+                    <form action="{{url_for('fire', id=user.id)}}">
+                        <button type="submit" class="btn btn-danger">Delete Client</button>
                     </form>
                 {% endif %}
                 
+                {% if user.active == 1 %}
+                    {% if (user.type == 'salesperson') %}
+                        <form action="{{url_for('promote_demote', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Promote to Manager</button>
+                        </form>
+                    {% else %}
+                        <form action="{{url_for('promote_demote', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Demote to Salesperson</button>
+                        </form>
+                    {% endif %}
+                
+                {% else %}
+                    {% if (user.type == 'salesperson') %}
+                        <form action="{{url_for('unsuspend', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Unsuspend Salesperson</button>
+                        </form>
+                    {% else %}
+                        <form action="{{url_for('unsuspend', id=user.id)}}">
+                            <button type="submit" class="btn btn-warning">Unsuspend Manager</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+                <br>
+                {% if (user.type == 'manager'  or user.type == 'salesperson') %}
+                    <form action="{{url_for('fire', id=user.id)}}">
+                        <button type="submit" class="btn btn-danger">Fire employee</button>
+                    </form>
+                {% endif %}
 			</div>
 		</div>
 	</div>
