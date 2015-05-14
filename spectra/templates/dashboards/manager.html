@@ -18,6 +18,11 @@
         <div class="row">
             <div class="col-md-4">
                 <ul class="nav nav-pills nav-stacked">
+                    <h2>Actions</h2>
+                    <li><a href="{{url_for('manager_hire_salesperson')}}">Hire Salesperson</a></li>
+                    <li><a href="{{url_for('manager_set_product_promotion')}}">Set Product Promotion</a></li>
+
+                    <h2>Salespeople</h2>
                     {% for sp in salespeople %}
                         <li class="{{"active" if sp.id == salesperson.id}}">
                             <a href="{{url_for('manager_dashboard', id=sp.id)}}">{{sp.name()}}
@@ -36,13 +41,29 @@
                             <td>Name</td>
                             <td># of Clients</td>
                             <td>Rating</td>
+                            <td>Commission</td>
+                            <td>Status</td>
                         </thead>
                         <tr>
                             <td>{{salesperson.name()}}</td>
                             <td>{{salesperson.get_clients()|length}}
                             <td>{{salesperson.rating()}}</td>
+                            <td>{{salesperson.commission * 100}}%</td>
+                            <td>
+                                {% if salesperson.active %}
+                                    Active
+                                {% else %}
+                                    Suspended
+                                {% endif %}
+                            </td>
                         </tr>
                     </table>
+
+                    <a href="{{url_for('manager_set_salesperson_commission', id=salesperson.id)}}" class="btn btn-info" role="button">Edit Commission</a>
+                    {% if not salesperson.active %}
+                        <a href="{{url_for('manager_unsuspend_salesperson', id=salesperson.id)}}" class="btn btn-danger" role="button">Unsuspend</a>
+                    {% endif %}
+                    <a href="{{url_for('manager_fire_salesperson', id=salesperson.id)}}" class="btn btn-danger" role="button">Fire Salesperson</a>
 
                     <h2>Clients</h2>
                     <table class="table table-hover">
@@ -50,12 +71,28 @@
                             <td>Name</td>
                             <td># of Orders</td>
                             <td>Rating</td>
+                            <td>Status</td>
+                            <td>Actions</td>
                         </thead>
                         {% for client in salesperson.get_clients() %}
                             <tr>
                                 <td>{{client.name()}}</td>
                                 <td>{{client.get_orders()|length}}
                                 <td>{{client.rating()}}</td>
+                                <td>
+                                    {% if client.active %}
+                                        Active
+                                    {% else %}
+                                        Blacklisted
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if client.active %}
+                                        <a href="{{url_for('manager_blacklist_client', id=client.id)}}">Blacklist</a>
+                                    {% else %}
+                                        <a href="{{url_for('manager_unblacklist_client', id=client.id)}}">Unblacklist</a>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </table>

@@ -24,6 +24,9 @@ def products_index():
     if (session["user"]["type"] == 'manager'):
         return redirect(url_for('manager_dashboard'))
 
+    if (session["user"]["type"] == 'salesperson'):
+        return redirect(url_for('salesperson_dashboard'))
+
     categories = db.session.query(Product.category.distinct()).all()
     category = request.args.get('category')
     if category:

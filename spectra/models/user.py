@@ -97,6 +97,12 @@ class User(db.Model):
         relations = SalespeopleClient.query.filter(SalespeopleClient.salesperson_id == self.id)
         return map(lambda relation: User.query.get(relation.client_id), relations)
 
+    def get_manager(self):
+        if self.type != "salesperson":
+            raise BaseException("Can't get a manager for a non-salesperson!")
+
+        return Manager_salespeople.query.filter(Manager_salespeople.salesperson_id == self.id).first()
+
     # For managers
     def get_salespeople(self):
         if self.type != "manager":
