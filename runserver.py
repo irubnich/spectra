@@ -1,7 +1,7 @@
 import os
 from spectra import app
 
-if os.environ['PORT']:
+if os.environ.has_key('PORT'):
     port = int(os.environ['PORT'])
 else:
     port = 5000
