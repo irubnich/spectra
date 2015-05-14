@@ -2,63 +2,42 @@
 
 {% block body %}
     <style>
-        .boxed {
-            border: 1px solid green ;
-            padding:5px;
-            overflow:hidden;
-            width: 99%
-        }
-        
-        .left {
-            float: left;
-            width: 59%;
-        }
-        .right {
-            overflow: hidden;
-            width: 40%;
-        }
-        
-        #parent {
-            margin: 0;
-            width: 99%;
-        }
     </style>
 
-  
-    <br><br><br>
-    <font size="20"><strong>Thank You!</strong></font><br><br>
-    <strong> Your order has been placed and sent to your salesperson,
-    [{{salesperson}}] for approval. <br> Please, allow up to to 2 business days for processing the order. </strong>
-    <br><br>
-    
-    <div class="boxed">
-        <h1> Order Summary </h1>
-    </div>    
-    <br>
-    
-    {% for product in products %}
-    
-    <div class="boxed" id="parent">
-        <div class="left">
-            <div style="height:100%; width:30%; float:left">
-                <img src="{{product.product.image}}" alt="{{product.product.name}}" width="200" height="140">
-            </div>
-            <div style="padding:40px">
-                <font size="7">{{product.product.name}}</font>
-                <br>&nbsp;&nbsp;&nbsp;&nbsp; Quantity: {{product.quantity}}
-            </div>
-        </div>
-        <div class='right' style="text-align:right; padding-top:40px">
-            <font size="6.5">$ {{product.product.price * product.quantity}}</font>
-        </div>
-    </div>
-    <br><br>
-    
-    {% endfor %}
-    
-    <br><br>
-    <div style="float:right"><font size="5">
-        <strong>Total: ${{total}}</strong></font>
-    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Thank You</h1>
+                <p>
+                    Your order has been placed and sent to your salesperson, {{salesperson}} for approval.
+                    <br>Please allow up to to 2 business days for processing the order.
+                </p>
 
+                <h1>Order Summary</h1>
+                <table class="table table-striped">
+                    <tr class="cart-head">
+                        <td>Product</td>
+                        <td>Quantity</td>
+                        <td>Total</td>
+                    </tr>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{product["product"].name}}</td>
+                            <td>{{product.quantity}}</td>
+                            <td>${{'{:2,.2f}'.format(product["product"].price * product.quantity)}}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4">
+                            Total: <strong>${{'{:2,.2f}'.format(order.total)}}</strong>
+                        </td>
+                    </tr>
+                </table>
+
+                <h1>Rate Your Order</h1>
+                <p>Our salespeople appreciate your feedback. Please rate your order.</p>
+                <a class="btn btn-primary" href="{{url_for('rate', order_id=order.id)}}" role="button">Rate</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

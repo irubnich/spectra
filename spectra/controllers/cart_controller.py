@@ -1,6 +1,7 @@
 from spectra import app
 from spectra.models import db
 from spectra.models.product import Product
+from spectra.models.user import User
 from spectra.controllers.user_helpers import check_user_validity
 from flask import render_template, redirect, url_for, request, flash, session
 from IPython import embed
@@ -10,7 +11,7 @@ from IPython import embed
 def cart_index():
     cart_items = session["cart"]["items"]
     products = []
-    total = 0.0
+    subtotal = 0.0
 
     # loop over products currently in cart
     for cart_item in cart_items:
@@ -20,9 +21,14 @@ def cart_index():
             "quantity": cart_item["quantity"],
 			"inventory": db_product.inventory
         })
-        total += (db_product.price * int(cart_item["quantity"]))
+        subtotal += (db_product.price * int(cart_item["quantity"]))
 
-    return render_template('cart/index.html', products=products, total=total)
+    # Calculate discount
+    user = User.query.get(session["user"]["id"])
+    discount = (subtotal * user.discount)
+    total = subtotal - discount
+
+    return render_template('cart/index.html', products=products, subtotal=subtotal, discount=discount, total=total)
 
 #
 # Edit cart item quantity

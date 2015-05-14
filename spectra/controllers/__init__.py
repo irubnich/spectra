@@ -5,3 +5,4 @@ import spectra.controllers.complaints_controller
 import spectra.controllers.cart_controller
 import spectra.controllers.checkouts_controller
 import spectra.controllers.product_mgmt_controller
+import spectra.controllers.ratings_controller
