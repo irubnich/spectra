@@ -208,3 +208,26 @@ def new_password():
     db.session.commit()        
     flash("Reset password is successful.")
     return redirect(url_for("login"))
+
+# 
+# View User Ratings
+# 
+
+@app.route("/users/view_user_ratings")
+def view_user_ratings():
+    clients = sorted(User.query.filter(User.type == "client").all(), key=lambda x: x.rating(), reverse=True)
+    salespeople = sorted(User.query.filter(User.type == "salesperson").all(), key=lambda x: x.rating(), reverse=True)
+
+    return render_template("users/view_user_ratings.html", clients=clients, salespeople=salespeople)
+
+
+
+
+
+
+
+
+
+
+
+

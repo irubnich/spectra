@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6"> <!-- 1st column -->
+            <h1>Clients</h1>
+                {% for client in clients %}
+                    <li>
+                        {{client.name()}}  
+                        {{client.rating()}}                     
+                    </li>
+                {% endfor %}
+        </div>
+        <div class="col-md-6"> <!-- 2nd column -->
+            <h1>Salespeople</h1>
+                {% for salesperson in salespeople %}
+                    <li>
+                        {{salesperson.name()}}  
+                        {{salesperson.rating()}} 
+                    </li>
+                {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+<!--  -->
