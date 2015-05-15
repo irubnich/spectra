@@ -44,6 +44,11 @@ def checkout_page():
 
 @app.route("/checkout", methods=["POST"])
 def place_order():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
 	user = User.query.get(session["user"]["id"])
 	salesperson = user.get_salesperson()
 	date = datetime.now()
@@ -94,6 +99,11 @@ def place_order():
 
 @app.route("/checkout/confirm/<int:id>")
 def order_confirm(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+        
 	order = Order.query.get(id) #Obtain Order of the order id to find salesperson id
 	salesperson = User.query.get(order.salesperson_id) #Obtain Salesperson so we can use his name
 

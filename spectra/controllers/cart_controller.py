@@ -9,6 +9,11 @@ from IPython import embed
 
 @app.route("/cart")
 def cart_index():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
     cart_items = session["cart"]["items"]
     products = []
     subtotal = 0.0
@@ -36,6 +41,11 @@ def cart_index():
 
 @app.route("/cart", methods=["POST"])
 def cart_edit():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
     product_id = request.form["product_id"]
     quantity = request.form["quantity"]
 
@@ -53,6 +63,11 @@ def cart_edit():
 
 @app.route("/cart/<int:id>/delete")
 def cart_delete(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+        
     product_dict = None
     for item in session["cart"]["items"]:
         if item["product"] == id:

@@ -215,19 +215,13 @@ def new_password():
 
 @app.route("/users/view_user_ratings")
 def view_user_ratings():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
     clients = sorted(User.query.filter(User.type == "client").all(), key=lambda x: x.rating(), reverse=True)
     salespeople = sorted(User.query.filter(User.type == "salesperson").all(), key=lambda x: x.rating(), reverse=True)
 
     return render_template("users/view_user_ratings.html", clients=clients, salespeople=salespeople)
-
-
-
-
-
-
-
-
-
-
-
 

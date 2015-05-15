@@ -8,6 +8,7 @@ from spectra.models.invitation import Invitation
 from spectra.models.product_suggestion import ProductSuggestion
 from spectra.models.managers_salespeople import Manager_salespeople
 from flask import render_template, redirect, url_for, request, flash, session
+from spectra.controllers.user_helpers import check_user_validity
 import re
 import hashlib
 import random
@@ -25,6 +26,15 @@ def director_dashboard():
 @app.route("/dashboards/manager", defaults={'id': None})
 @app.route("/dashboards/manager/<int:id>")
 def manager_dashboard(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     user = User.query.get(session["user"]["id"])
     salespeople = sorted(user.get_salespeople(), key=lambda x: x.rating(), reverse=True)
 
@@ -44,6 +54,15 @@ def manager_dashboard(id):
 
 @app.route("/dashboards/manager/unsuspend/<int:id>")
 def manager_unsuspend_salesperson(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     user = User.query.get(id)
     user.active = True
     db.session.commit()
@@ -52,10 +71,28 @@ def manager_unsuspend_salesperson(id):
 
 @app.route("/dashboards/manager/edit-commission/<int:id>")
 def manager_edit_commission(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     pass
 
 @app.route("/dashboards/manager/fire-salesperson/<int:id>")
 def manager_fire_salesperson(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     user = User.query.get(id)
     db.session.delete(user)
 
@@ -69,10 +106,28 @@ def manager_fire_salesperson(id):
 
 @app.route("/dashboards/manager/hire")
 def manager_hire_salesperson():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     return render_template("dashboards/manager/hire_salesperson.html")
 
 @app.route("/dashboards/manager/hire", methods=["POST"])
 def manager_hire_salesperson_process():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     email = request.form["email"]
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
@@ -115,6 +170,15 @@ def manager_hire_salesperson_process():
 
 @app.route("/dashboards/manager/blacklist-client/<int:id>")
 def manager_blacklist_client(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     user = User.query.get(id)
     user.active = False
     db.session.commit()
@@ -124,6 +188,15 @@ def manager_blacklist_client(id):
 
 @app.route("/dashboards/manager/unblacklist-client/<int:id>")
 def manager_unblacklist_client(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     user = User.query.get(id)
     user.active = True
     db.session.commit()
@@ -133,11 +206,29 @@ def manager_unblacklist_client(id):
 
 @app.route("/dashboards/manager/set-product-promotion")
 def manager_set_product_promotion():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     products = Product.query.all()
     return render_template("dashboards/manager/set_product_promotion.html", products=products)
 
 @app.route("/dashboards/manager/set-product-promotion", methods=["POST"])
 def manager_set_product_promotion_process():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     product = Product.query.get(request.form["product"])
     product.promotion = float(request.form["promotion"]) / 100
     db.session.commit()
@@ -147,11 +238,29 @@ def manager_set_product_promotion_process():
 
 @app.route("/dashboards/manager/set-salesperson-commission/<int:id>")
 def manager_set_salesperson_commission(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     salesperson = User.query.get(id)
     return render_template("dashboards/manager/set_salesperson_commission.html", salesperson=salesperson)
 
 @app.route("/dashboards/manager/set-salesperson-commission/<int:id>", methods=["POST"])
 def manager_set_salesperson_commission_process(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'manager'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     salesperson = User.query.get(id)
     salesperson.commission = float(request.form["commission"]) / 100
     db.session.commit()
@@ -165,6 +274,15 @@ def manager_set_salesperson_commission_process(id):
 @app.route("/dashboards/salesperson", defaults={'id': None})
 @app.route("/dashboards/salesperson/<int:id>")
 def salesperson_dashboard(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'salesperson'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     user = User.query.get(session["user"]["id"])
     clients = user.get_clients()
 
@@ -176,6 +294,15 @@ def salesperson_dashboard(id):
 
 @app.route("/dashboards/salesperson/approve_order/<int:id>")
 def salesperson_approve_order(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'salesperson'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     order = Order.query.get(id)
     order.date_approved = datetime.now()
     db.session.commit()
@@ -185,6 +312,15 @@ def salesperson_approve_order(id):
 
 @app.route("/dashboards/salesperson/reject_order/<int:id>")
 def salesperson_reject_order(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'salesperson'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     order = Order.query.get(id)
     order.date_rejected = datetime.now()
     db.session.commit()
@@ -194,10 +330,28 @@ def salesperson_reject_order(id):
 
 @app.route("/dashboards/salesperson/suggest-product")
 def salesperson_suggest_product():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'salesperson'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     return render_template("dashboards/salesperson/suggest_product.html")
 
 @app.route("/dashboards/salesperson/suggest-product", methods=["POST"])
 def salesperson_suggest_product_process():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'salesperson'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     suggestion = ProductSuggestion(session["user"]["id"], request.form["product_name"], request.form["reason"])
     db.session.add(suggestion)
     db.session.commit()
@@ -207,10 +361,28 @@ def salesperson_suggest_product_process():
 
 @app.route("/dashboards/salesperson/invite-client")
 def salesperson_invite_client():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'salesperson'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     return render_template("dashboards/salesperson/invite_client.html")
 
 @app.route("/dashboards/salesperson/invite-client", methods=["POST"])
 def salesperson_invite_client_process():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'salesperson'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     email = request.form["client_email"]
     date = datetime.now()
     code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
@@ -224,6 +396,15 @@ def salesperson_invite_client_process():
 
 @app.route("/dashboards/salesperson/claim-client")
 def salesperson_claim_client():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'salesperson'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     clients = User.query.filter(User.type == "client").all()
     unclaimed_clients = []
     for client in clients:
@@ -234,6 +415,15 @@ def salesperson_claim_client():
 
 @app.route("/dashboards/salesperson/claim-client/<int:id>")
 def salesperson_claim_client_process(id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
+    if (session["user"]["type"] != 'salesperson'):
+        flash("Access denied!")
+        return redirect(url_for('products_index'))
+
     user = User.query.get(id)
     association = SalespeopleClient(session["user"]["id"], user.id)
 

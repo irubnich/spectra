@@ -32,6 +32,11 @@ def rating_index():
 
 @app.route("/ratings/<int:order_id>/rate")
 def rate(order_id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
     # Can we rate this order?
     order = Order.query.get(order_id)
     if order.is_rated_by_user(session["user"]["id"]):
@@ -42,6 +47,11 @@ def rate(order_id):
 
 @app.route("/ratings" , methods=["POST"])
 def place_rating():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
     user = User.query.get(session["user"]["id"])
     order_id = request.form["order_id"] # "order_id" is from the form
     order = Order.query.get(order_id)
@@ -68,6 +78,11 @@ def place_rating():
 
 @app.route("/ratings/<int:order_id>/view")
 def view(order_id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+        
 	order = Order.query.get(order_id) #Obtain Order of the order id to find salesperson id
 	salesperson = User.query.get(order.salesperson_id) #Obtain Salesperson so we can use his name
 
