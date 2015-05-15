@@ -34,10 +34,15 @@ def products_index():
         products = Product.query.filter_by(category=category).all()
     else:
         products = Product.query.all()
-	
-	result= db.engine.execute("SELECT product_id, SUM(quantity) FROM order_products GROUP BY product_id ORDER BY SUM(quantity) DESC LIMIT 3;")
 
-    return render_template("products/index.html", categories=categories, products=products, result=result)
+    top3 = None
+    if not category:
+        db_result = db.engine.execute("SELECT product_id, SUM(quantity) FROM order_products GROUP BY product_id ORDER BY SUM(quantity) DESC LIMIT 3;")
+        top3 = []
+        for r in db_result:
+            top3.append(Product.query.get(r[0]))
+
+    return render_template("products/index.html", categories=categories, products=products, result=top3)
 
 
 #

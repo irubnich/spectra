@@ -26,31 +26,29 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h1>Products</h1>
-			{% for top3 in result %}
-                {% for product in products %}
-					{% if top3[0] == product.id %}
-                    <div class="product">
-                        <a href="{{url_for('show_product', id=product.id)}}">
-                            <img class="img" src="{{product.image}}"><br>
-                            {{product.name}}
-                        </a>
-                        <div class="attributes">
-                            <strong>
-                                <strike>${{'{:2,.2f}'.format(product.price)}}</strike><br>
-                                <em>now:</em>
-                                ${{product.promotional_price()}}
-                            </strong>
+                {% if result %}
+                    <h1>Top Selling Products</h1>
+                    {% for product in result %}
+                        <div class="product">
+                            <a href="{{url_for('show_product', id=product.id)}}">
+                                <img class="img" src="{{product.image}}"><br>
+                                {{product.name}}
+                            </a>
+                            <div class="attributes">
+                                <strong>
+                                    <strike>${{'{:2,.2f}'.format(product.price)}}</strike><br>
+                                    <em>now:</em>
+                                    ${{product.promotional_price()}}
+                                </strong>
+                            </div>
+                            <form action="{{url_for('add_to_cart', id=product.id, quantity=1, return_to_home=True)}}" method="post">
+                                <input type="hidden" value="1" name="quantity">
+                                <button type="submit" class="btn btn-primary">Add To Cart</button>
+                            </form>
                         </div>
-                        <form action="{{url_for('add_to_cart', id=product.id, quantity=1, return_to_home=True)}}" method="post">
-                            <input type="hidden" value="1" name="quantity">
-                            <button type="submit" class="btn btn-primary">Add To Cart</button>
-                        </form>
-                    </div>
-					{% endif %}
-                {% endfor %}
-			{% endfor %}
-				
+                    {% endfor %}
+                {% endif %}
+
                 <h3>Filter By</h3>
                 <div class="btn-group" role="group">
                     <a class="btn btn-default" href="{{url_for('products_index')}}" role="button">All</a>

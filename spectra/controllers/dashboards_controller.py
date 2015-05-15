@@ -28,10 +28,13 @@ def manager_dashboard(id):
     user = User.query.get(session["user"]["id"])
     salespeople = sorted(user.get_salespeople(), key=lambda x: x.rating(), reverse=True)
 
-    sum_ratings = 0.0
-    for sp in salespeople:
-        sum_ratings += sp.rating()
-    rating = sum_ratings / len(salespeople)
+    if len(salespeople) != 0:
+        sum_ratings = 0.0
+        for sp in salespeople:
+            sum_ratings += sp.rating()
+        rating = sum_ratings / len(salespeople)
+    else:
+        rating = 0.0
 
     salesperson = None
     if id:
@@ -169,12 +172,7 @@ def salesperson_dashboard(id):
     if id:
         client = User.query.get(id)
 
-    sum_ratings = 0.0
-    for c in clients:
-        sum_ratings += c.rating()
-    rating = sum_ratings / len(clients)
-
-    return render_template("dashboards/salesperson.html", clients=clients, client=client, rating=rating)
+    return render_template("dashboards/salesperson.html", clients=clients, client=client)
 
 @app.route("/dashboards/salesperson/approve_order/<int:id>")
 def salesperson_approve_order(id):
