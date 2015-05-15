@@ -34,8 +34,9 @@ def products_index():
         products = Product.query.filter_by(category=category).all()
     else:
         products = Product.query.all()
-	
-	result= db.engine.execute("SELECT product_id, SUM(quantity) FROM order_products GROUP BY product_id ORDER BY SUM(quantity) DESC LIMIT 3;")
+
+    if category:
+        result = db.engine.execute("SELECT product_id, SUM(quantity) FROM order_products GROUP BY product_id ORDER BY SUM(quantity) DESC LIMIT 3;")
 
     return render_template("products/index.html", categories=categories, products=products, result=result)
 

@@ -6,9 +6,9 @@
 
         {% if session["user"] %}
             <ul class="nav navbar-nav">
-                {% if session["user"]["type"] == 'client' %}      
+                {% if session["user"]["type"] == 'client' %}
                     <li><a href="{{url_for('cart_index')}}">My Cart</a></li>
-                {% endif %}   
+                {% endif %}
                 {% if session["user"]["type"] == 'client' or session["user"]["type"] == 'salesperson' %}
                     <li><a href="{{url_for('new_complaint')}}">Create Complaint</a></li>
                 {% endif %}
@@ -18,7 +18,7 @@
                 <li><a href="{{url_for('edit', id=session['user']['id'])}}">Edit profile</a></li>
                 {% if session["user"]["type"] == 'client' %}
                     <li><a href="{{url_for('rating_index')}}">View Past Orders</a></li>
-                {% endif %}          
+                {% endif %}
                 <li><a href="{{url_for('logout')}}">Logout</a></li>
             </ul>
         {% endif %}

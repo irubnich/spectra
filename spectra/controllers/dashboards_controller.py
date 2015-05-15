@@ -169,12 +169,7 @@ def salesperson_dashboard(id):
     if id:
         client = User.query.get(id)
 
-    sum_ratings = 0.0
-    for c in clients:
-        sum_ratings += c.rating()
-    rating = sum_ratings / len(clients)
-
-    return render_template("dashboards/salesperson.html", clients=clients, client=client, rating=rating)
+    return render_template("dashboards/salesperson.html", clients=clients, client=client)
 
 @app.route("/dashboards/salesperson/approve_order/<int:id>")
 def salesperson_approve_order(id):
