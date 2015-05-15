@@ -1,6 +1,7 @@
 from spectra import app
 from spectra.models import db
 from spectra.models.product import Product
+from spectra.models.order_product import OrderProduct
 from spectra.controllers.user_helpers import check_user_validity
 from flask import render_template, redirect, url_for, request, flash, session
 
@@ -33,8 +34,10 @@ def products_index():
         products = Product.query.filter_by(category=category).all()
     else:
         products = Product.query.all()
+	
+	result= db.engine.execute("SELECT product_id, SUM(quantity) FROM order_products GROUP BY product_id ORDER BY SUM(quantity) DESC LIMIT 3;")
 
-    return render_template("products/index.html", categories=categories, products=products)
+    return render_template("products/index.html", categories=categories, products=products, result=result)
 
 
 #

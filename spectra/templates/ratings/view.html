@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <style>
+    </style>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Thank You</h1>
+                {% if order.date_approved %}
+				<p>
+                    Your order has been approved by {{salesperson}} on {{order.date_approved}}.
+                </p>				
+				{% endif %}
+                
+				{% if order.date_approved == None %}
+				<p>
+                    Your order has been placed and sent to your salesperson, {{salesperson}} for approval.
+                    <br>Please allow up to to 2 business days for processing the order.
+                </p>
+				{% endif %}							
+				{% if order.date_rejected %}
+				<p>
+                    Your order has been rejected by {{salesperson}} on {{order.date_rejected}}.
+                </p>
+				{% endif %}	
+				
+                <h1>Order Summary</h1>
+                <table class="table table-striped">
+                    <tr class="cart-head">
+                        <td>Product</td>
+                        <td>Quantity</td>
+                        <td>Total</td>
+                    </tr>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{product["product"].name}}</td>
+                            <td>{{product.quantity}}</td>
+                            <td>${{'{:2,.2f}'.format(product["product"].price * product.quantity)}}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4">
+                            Total: <strong>${{'{:2,.2f}'.format(order.total)}}</strong>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
