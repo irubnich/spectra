@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <style>
+        .header_director{
+            width: 20%;
+            height: 100%;
+            float: left;
+        }
+        .prod_list {
+            width: 80%;
+            height: 100%;
+            float: right;
+        }
+        .vis_prod {
+            display: inline-table;
+            width: 19%;
+            height: 100%;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .vis_prod .img {
+            max-width: 100px;
+            margin-bottom: 6px;
+            
+        }
+        .vis_prod a {
+            text-decoration: none;
+        }
+        .butt {
+            float: right;
+        }
+
+    </style>
+    <div class="container header_director">
+        <div class="row">
+            <div class="col-md-12">  
+                <ul class="nav nav-pills nav-stacked">
+                    <h3><u>Product Management</u></h3>
+                    <li><a href="{{url_for('list_suggested_products')}}">View Suggested products</a></li>
+                    <li><a href="{{url_for('create_product')}}">Create a product</a></li>
+                    <li class="active"><a href="{{url_for('visible_product')}}">Set a Product Visibility</a></li>
+                    <li><a href="{{ url_for('edit_product_list')}}">Edit a Product</a></li>
+                </ul>
+            </div>     
+        </div>
+    </div>
+    
+    <form action="{{url_for('confirm_visible_product')}}" method="post">
+    <div class="container prod_list">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary butt">Apply Changes</button>
+            </div>
+            <div class="col-md-12">
+                {% for product in products %}
+                    <div class="vis_prod">
+                        <a href="{{url_for('show_product', id=product.id)}}">
+                            <img class="img" src="{{product.image}}"><br>
+                            {{product.name}} <br></a>
+                            {% if product.active == 1 %}
+                                <div class="checkbox">
+                                  <label><input type="checkbox" value="{{product.id}}" name="checked">Deactivate Product</label>
+                                </div>
+                            {% elif product.active == 0 %}
+                                <div class="checkbox">
+                                <label><input type="checkbox" value="{{product.id}}" name="checked">Activate Product</label>
+                                </div>
+                            {% endif %} <br>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    </form>
+{% endblock %}

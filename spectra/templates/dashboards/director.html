@@ -1,0 +1,145 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <style>
+        .header_director{
+            width: 20%;
+            height: 100%;
+            float: left;
+        }
+        .user_mgmt {
+            width: 60%;
+            height: 100%;
+        }
+        .flash {
+            width: 500px;
+            margin: 0 auto;
+        }
+        thead {
+            font-weight: bold;
+        }
+        .badge {
+            float: right;
+        }
+    </style>
+
+    <div class="container header_director">
+        <div class="row">
+            <div class="col-md-12">  
+                <a class="navbar-brand navbar-left"><u>Product Management</u></a>
+                <ul class="nav navbar-nav">
+                    <li><a href="{{url_for('list_suggested_products')}}">View Suggested products</a></li>
+                    <li><a href="{{url_for('create_product')}}">Create a product</a></li>
+                    <li><a href="{{url_for('visible_product')}}">Set a Product Visibility</a></li>
+                    <li><a href="{{url_for('edit_product_list')}}">Edit a Product</a></li>
+                </ul>
+            </div>     
+        </div>
+    </div>
+    
+    <div class="container user_mgmt">
+        <div class="row-md-12">
+            <div class="col-md-12">
+                <h1>Director Dashboard</h1>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br><br>
+        </div>
+        <div class="row-md-12">
+            <div class="col-md-4">
+                <ul class="nav nav-pills nav-stacked">
+                    <h2>Actions</h2>
+                    <li><a href="{{url_for('hire')}}">Hire a new employee</a></li>
+                    <h2>Managers</h2>
+                    {% for mgr in managers %}
+                        <li class="{{"active" if mgr.id == manager.id}}">
+                            <a href="{{url_for('director_dashboard', id=mgr.id)}}">{{mgr.name()}}
+                                
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-8">
+                {% if not manager %}
+                    <em>Select a manager on your left to begin.</em>
+                {% else %}
+                    <table class="table table-hover">
+                        <thead>
+                            <td>Name</td>
+                            <td># of Salespeople</td>
+                            <td>Rating</td>
+                            <td>Status</td>
+                        </thead>
+                        <tr>
+                            <td>{{manager.name()}}</td>
+                            <td>{{manager.get_salespeople()|length}}
+                            <td>{{rating}}</td>
+                            <td>
+                                {% if manager.active %}
+                                    Active
+                                {% else %}
+                                    Suspended
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+
+                    <a href="{{url_for('edit', id=manager.id)}}" class="btn btn-info" role="button">Edit Profile</a>
+                    {% if not manager.active %}
+                        <a href="{{url_for('unsuspend', id=manager.id)}}" class="btn btn-warning" role="button">Unsuspend</a>
+                    {% else %}
+                        <a href="{{url_for('promote_demote', id=manager.id)}}" class="btn btn-warning" role="button">Demote to Salesperson</a>
+                    {% endif %}
+                    <a href="{{url_for('fire', id=manager.id)}}" class="btn btn-danger" role="button">Fire Manager</a>
+
+                    <h2>Salespeople</h2>
+                    <table class="table table-hover">
+                        <thead>
+                            <td>Name</td>
+                            <td># of Clients</td>
+                            <td>Rating</td>
+                            <td>Commission</td>
+                            <td>Status</td>
+                            <td>Actions</td>
+                        </thead>
+                        {% for salesperson in manager.get_salespeople() %}
+                            <tr>
+                                {% if salesperson.type == "salesperson" %}
+                                <td>{{salesperson.name()}}</td>
+                                <td>{{salesperson.get_clients()|length}}
+                                <td>{{salesperson.rating()}}</td>
+                                <td>
+                                    {% if salesperson.active %}
+                                        Active
+                                    {% else %}
+                                        Suspended
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form action="{{url_for('edit', id=salesperson.id)}}" method="get">
+                                        <button type="submit" class="btn btn-info">Edit Profile</button>
+                                    </form>                        
+                                    {% if salesperson.active == 0 %}
+                                        <form action="{{url_for('unsuspend', id=salesperson.id)}}">
+                                            <button type="submit" class="btn btn-warning">Unsuspend Salesperson</button>
+                                        </form>
+                                    {% else %}
+                                    <form action="{{url_for('promote_demote', id=salesperson.id)}}">
+                                        <button type="submit" class="btn btn-warning">Promote to Manager</button>
+                                    </form>
+                                    {% endif %}
+                                    <form action="{{url_for('fire', id=salesperson.id)}}">
+                                        <button type="submit" class="btn btn-danger">Fire employee</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

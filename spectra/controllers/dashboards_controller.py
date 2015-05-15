@@ -1,43 +1,47 @@
 from spectra import app
 from spectra.models import db
 from spectra.models.user import User
+from spectra.models.product import Product
 from spectra.models.managers_salespeople import Manager_salespeople
-from spectra.controllers.user_helpers import check_user_validity
 from flask import render_template, redirect, url_for, request, flash, session
-from IPython import embed
-from datetime import datetime
-import hashlib
 import re
+import hashlib
+from datetime import datetime
+
+@app.route("/dashboards/director", defaults={'id': None})
+@app.route("/dashboards/director/<int:id>")
+def director_dashboard(id):
+    managers = sorted(User.query.filter(User.type == 'manager').all(), key=lambda x: x.rating(), reverse=True)
+    rating = None
+    manager = None
+    if id:
+        manager = User.query.get(id)
+        salespeople = sorted(manager.get_salespeople(), key=lambda x: x.rating(), reverse=True)
+
+        if len(salespeople) != 0:
+            sum_ratings = 0.0
+            for sp in salespeople:
+                sum_ratings += sp.rating()
+            rating = sum_ratings / len(salespeople)
+        else:
+            rating = 0.0
+
+    return render_template("dashboards/director.html", managers=managers, manager=manager, rating=rating)
 
 #
-# Show a User
-#
- 
-@app.route("/users/<int:id>")
-def show(id):
-    
-    if (session["user"]["type"] != 'director'):             ## only director could delete users
-        flash("You don't have permission to access that page.")
-        return redirect(url_for('index'))
-    
-    
-    user = User.query.get_or_404(id)
-    return render_template("users/show.html", user=user)
-
-#
-# Hire a User
+# Director Actions
 #
 
-@app.route("/users/hire", methods=["GET"])
+@app.route("/dashboards/hire", methods=["GET"])
 def hire():
     managers = User.query.filter(User.type == 'manager').all()
-    return render_template("users/hire.html", managers=managers)
+    return render_template("dashboards/hire.html", managers=managers)
 
-@app.route("/users/hire", methods=["POST"])
+@app.route("/dashboards/hire", methods=["POST"])
 def new_employee():
     if (session["user"]["type"] != 'director'):             ## only director could delete users
         flash("You don't have permission to access that page.")
-        return redirect(url_for('index'))
+        return redirect(url_for('director_dashboard'))
 
     position_applied = request.form["position"]
     assigned_manager = request.form["ass_manager"]
@@ -92,35 +96,37 @@ def new_employee():
         db.session.commit()
 
     flash("Hiring process is complete.")
-    return redirect(url_for('index'))
+    return redirect(url_for('director_dashboard'))
+
     
 #
 # Fire/Delete a User
 #
 
-@app.route("/users/fire/<int:id>")
+@app.route("/dashboards/fire/<int:id>")
 def fire(id):
 
     if (session["user"]["type"] != 'director'):             ## only director could delete users
         flash("You don't have permission to access that page.")
-        return redirect(url_for('index'))
+        return redirect(url_for('director_dashboard'))
     
     user = User.query.get_or_404(id)
     db.session.delete(user)
     db.session.commit()
-    return redirect(url_for('index'))
+    flash("Employee has been fired.")
+    return redirect(url_for('director_dashboard'))
     
     
 #
-# Unsuspend a salesperson
+# Unsuspend a salesperson/manager
 #
 
-@app.route("/users/unsuspend/<int:id>")
+@app.route("/dashboards/unsuspend/<int:id>")
 def unsuspend(id):
 
     if (session["user"]["type"] != 'director'):             ## only director could delete users
         flash("You don't have permission to access that page.")
-        return redirect(url_for('index'))
+        return redirect(url_for('director_dashboard'))
     
     user = User.query.get_or_404(id)
     
@@ -132,18 +138,18 @@ def unsuspend(id):
             user.active = 1
             flash("Manager is now active.")
     db.session.commit()   
-    return redirect(url_for('show', id=user.id))
+    return redirect(url_for('director_dashboard', id=user.id))
     
 #
 # Promote/Demote a User
 #
 
-@app.route("/users/promote_demote/<int:id>")
+@app.route("/dashboards/promote_demote/<int:id>")
 def promote_demote(id):
 
     if (session["user"]["type"] != 'director'):             ## only director could delete users
         flash("You don't have permission to access that page.")
-        return redirect(url_for('index'))
+        return redirect(url_for('director_dashboard'))
     
     user = User.query.get_or_404(id)
     
@@ -155,17 +161,17 @@ def promote_demote(id):
         flash("Manager has been demoted to Salesperson.")
     
     db.session.commit()   
-    return redirect(url_for('show', id=user.id))
+    return redirect(url_for('director_dashboard'))
 
 #
 # Blacklist/Unblacklist a User 
 #
  
-@app.route("/users/blacklist/<int:id>")
+@app.route("/dashboards/blacklist/<int:id>")
 def blacklist(id):    
     if (session["user"]["type"] != 'director'):             ## only director could delete users
         flash("You don't have permission to access that page.")
-        return redirect(url_for('index'))
+        return redirect(url_for('director_dashboard'))
     
     user = User.query.get_or_404(id)
     
@@ -177,4 +183,4 @@ def blacklist(id):
         flash("Client has been removed from the blacklist.")
     
     db.session.commit()
-    return redirect(url_for('show', id=user.id))
+    return redirect(url_for('director_dashboard', id=user.id))

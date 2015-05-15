@@ -9,40 +9,51 @@ from flask import render_template, redirect, url_for, request, flash, session
 #Product Management Homepage
 @app.route("/product_management")
 def product_management_index():
-
-    if (session["user"]["type"] == 'client'): 		## Clients cannot access product management
+    if (session["user"]["type"] != 'director'):             ## only director could delete users
         flash("You don't have permission to access that page.")
         return redirect(url_for('index'))
-		
-    return render_template("product_management/index.html")
-	
-@app.route("/product_management/product_suggestion.html")
-def suggest_product():
-    if (session["user"]["type"] != 'salesperson'): 		## Only Salesperson can suggest a product
-        flash("You don't have permission to access that page.")
-        return redirect(url_for('index'))
-		
-    return render_template("product_management/product_suggestion.html")
-	
-@app.route("/product_management", methods=["POST"])
-def place_suggestion():
-	user = User.query.get(session["user"]["id"])
-	name = request.form["name"]
-	reason = request.form["reason"]	
-	
-	suggestion = ProductSuggestion(user.id, name, reason)
-	db.session.add(suggestion)
-	db.session.commit()
- 
 	return render_template("product_management/index.html")
 
-@app.route("/product_management/new_product.html")
-def create_product():
-	if (session["user"]["type"] != 'director'): 		## Only Director can create a product
-		flash("You don't have permission to access that page.")
-		return redirect(url_for('index'))
-	suggestions = ProductSuggestion.query.all()
-	return render_template("product_management/new_product.html", suggestions=suggestions)
+@app.route("/product_management/product_suggestion")
+def list_suggested_products():
+    if (session["user"]["type"] != 'director'): 		## Only Director can create a product
+        flash("You don't have permission to access that page.")
+        return redirect(url_for('director_dashboard'))
+    
+    suggestions = ProductSuggestion.query.all()
+    salespeople = User.query.all()
+
+    return render_template("product_management/product_suggestion.html", suggestions=suggestions, salespeople=salespeople)
+
+@app.route("/product_management/new_product", defaults={'id': None})
+@app.route("/product_management/new_product/<int:id>")
+def create_product(id):
+    if (session["user"]["type"] != 'director'): 		## Only Director can create a product
+        flash("You don't have permission to access that page.")
+        return redirect(url_for('director_dashboard'))
+    
+    new_product_name = None
+    if id:
+        suggestion = ProductSuggestion.query.get_or_404(id)
+        new_product_name = suggestion.name
+        db.session.delete(suggestion)
+        db.session.commit()
+        
+    return render_template("product_management/new_product.html", new_product_name=new_product_name)
+
+@app.route("/product_management/reject_suggestion/<int:id>")
+def reject_suggestion(id):
+    if (session["user"]["type"] != 'director'): 		## Only Director can create a product
+        flash("You don't have permission to access that page.")
+        return redirect(url_for('director_dashboard'))
+    
+    suggestion = ProductSuggestion.query.get_or_404(id)
+    db.session.delete(suggestion)
+    db.session.commit()
+    
+    flash("Suggestion has been rejected.")
+    return redirect(url_for('list_suggested_products'))
+        
 
 @app.route("/product_management/new_product.html", methods=["POST"])
 def confirm_product():
@@ -79,7 +90,7 @@ def confirm_product():
         flash("Invalid conversion for inventory")
         return redirect(url_for('confirm_product'))
 
-    if inventory < 0:
+    if inventory < 1:
         flash("Invalid entry for inventory")
         return redirect(url_for('confirm_product'))
 
@@ -93,47 +104,96 @@ def confirm_product():
         flash("Invalid entry for promotion")
         return redirect(url_for('confirm_product'))
 
-    product = Product(product_name, description, price, category, inventory, promotion, image_url)
+    product = Product(product_name, description, price, category, inventory, (promotion/100), image_url, 1)
     db.session.add(product)
     db.session.commit()
 
-    flash("Product created!")
-    return redirect(url_for('product_management_index'))
+    flash("Product is created!")
+    return redirect(url_for('director_dashboard'))
 
-@app.route("/product_management/<int:id>/edit_product.html")
-def edit_product_page(id):
-	if ((session["user"]["type"] == 'client') or (session["user"]["type"] == 'salesperson')): 		## Only Director can create a product
-		flash("You don't have permission to access that page.")
-		return redirect(url_for('index'))
-	product = Product.query.get(id)
-	return render_template("product_management/edit.html", product=product, user_type=session["user"]["type"])
 
 @app.route("/product_management/product_list.html")
 def edit_product_list():
-	if ((session["user"]["type"] == 'client') or (session["user"]["type"] == 'salesperson')): 		## Only Director can create a product
-		flash("You don't have permission to access that page.")
-		return redirect(url_for('index'))
-	products = Product.query.all()
+    if (session["user"]["type"] != 'director'):             ## only director could delete users
+        flash("You don't have permission to access that page.")
+        return redirect(url_for('director_dashboard'))
+    
+    products = Product.query.all()
+    return render_template("product_management/product_list.html", products=products)
 
-	return render_template("product_management/product_list.html", products=products, user_type=session["user"]["type"])
-
-@app.route("/product_management/product_list.html", methods=["POST"])
-def confirm_edit_product():
-	product = Product.query.filter(Product.id == request.form["product_id"])
-	if (session["user"]["type"] == 'director'):
-		product.name = request.form["product_name"]
-		product.description = request.form["description"]
-		product.price = request.form["price"]
-		product.category = request.form["category"]
-		product.inventory = request.form["inventory"]
-		product.promotion = request.form["promotion"]
-		product.image = request.form["image"]
-	elif (session["user"]["type"] == 'manager'):
-		product.name = request.form["promotion"]		
-	db.session.commit()
-	return render_template("product_management/index.html")
+@app.route("/product_management/edit_product/<int:id>") 
+def edit_product(id):
+    if (session["user"]["type"] != 'director'):             ## only director could delete users
+        flash("You don't have permission to access that page.")
+        return redirect(url_for('director_dashboard'))
+    
+    products = Product.query.all()
+    product = Product.query.get(id)
+    return render_template("product_management/edit.html", product=product, products =products)
 
 
+@app.route("/product_management/edit_product/<int:id>", methods=["POST"])
+def confirm_edit_product(id):
+    if (session["user"]["type"] != 'director'):             ## only director could delete users
+        flash("You don't have permission to access that page.")
+        return redirect(url_for('director_dashboard'))
+    
+    products = Product.query.all()
+    product = Product.query.get(id)
 
+    product.name = request.form["name"]
+    product.description = request.form["description"]
+    product.price = request.form["price"]
+    product.category = request.form["category"]
+    product.inventory = request.form["inventory"]
+    promotion = request.form["promotion"]
+    product.promotion = float(promotion)/100
+    product.image = request.form["image"]
+		
+    db.session.commit()
+    flash("Changes have been made to product.")
+    
+    return redirect(url_for('edit_product', id=product.id))
 
+@app.route("/product_management/products_visibility")
+def visible_product():
+    if (session["user"]["type"] != 'director'):             ## only director could delete users
+        flash("You don't have permission to access that page.")
+        return redirect(url_for('director_dashboard'))
+    
+    products = Product.query.all()
+    
+    return render_template("product_management/products_visibility.html", products=products)    
+    
+@app.route("/product_management/products_visibility", methods=["POST"])
+def confirm_visible_product():
+    if (session["user"]["type"] != 'director'): 		## Only Director can create a product
+        flash("You don't have permission to access that page.")
+        return redirect(url_for('director_dashboard'))
+    
+    products = Product.query.all()
+    checked = request.form.getlist("checked")
+    for product_id in checked:
+        product = Product.query.get(product_id)
+        if (product.active == 1):
+            product.active = 0
+        elif (product.active == 0):
+            product.active = 1
+    db.session.commit()
+    flash("Changes have been made to products visibility.")
+    return redirect(url_for('visible_product'))
+    
+    
+    
+@app.route("/product_management/delete_product/<int:id>")
+def remove_product(id):
 
+    if (session["user"]["type"] != 'director'):             ## only director could delete users
+        flash("You don't have permission to access that page.")
+        return redirect(url_for('director_dashboard'))
+    
+    product = Product.query.get_or_404(id)
+    db.session.delete(product)
+    db.session.commit()
+    flash("Product has been removed.")
+    return redirect(url_for('director_dashboard'))

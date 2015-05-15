@@ -17,7 +17,16 @@ def products_index():
     if not valid:
         flash(error)
         return redirect(url_for('login'))
+    
+    if (session["user"]["type"] == 'director'):
+        return redirect(url_for('director_dashboard'))
 
+    if (session["user"]["type"] == 'manager'):
+        return redirect(url_for('manager_dashboard'))
+
+    if (session["user"]["type"] == 'salesperson'):
+        return redirect(url_for('salesperson_dashboard'))
+    
     categories = db.session.query(Product.category.distinct()).all()
     category = request.args.get('category')
     if category:

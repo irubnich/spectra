@@ -1,8 +1,9 @@
 import spectra.controllers.users_controller
-import spectra.controllers.user_mgmt_controller
 import spectra.controllers.products_controller
 import spectra.controllers.complaints_controller
 import spectra.controllers.cart_controller
 import spectra.controllers.checkouts_controller
 import spectra.controllers.product_mgmt_controller
 import spectra.controllers.ratings_controller
+import spectra.controllers.dashboards_controller
+

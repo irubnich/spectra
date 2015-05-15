@@ -1,30 +1,106 @@
 {% extends "layout.html" %}
 
+
 {% block body %}
-	<h1>Edit Product</h1>
-	<form action="{{url_for('confirm_edit_product')}}" method="post">	
-	<input type="hidden" name="product_id" value="{{product.id}}">
-	{% if user_type == "manager" %}
-	{{product.name}}<br>
-	{{product.description}}<br>
-	{{product.price}}<br>
-	{{product.category}}<br>
-	{{product.inventory}}<br>
-	Promotion: <input type="text" name="promotion" value="{{product.promotion}}"><br>
-	{{product.image}}<br>	
-	{% endif %}
-	
-	{% if user_type == "director" %}
+    <style>
+        .header_director{
+            width: 20%;
+            height: 100%;
+            float: left;
+        }
+        .prod_list {
+            width: 20%;
+            height: 100%;
+            float: left;
+            padding-top:55px;
+        }
+        .edit {
+            width: 60%;
+            height: 100%;
+            float: right;
+            padding-top:55px;
+        }
+        .flash {
+            width: 500px;
+            margin: 0 auto;
+        }
+        thead {
+            font-weight: bold;
+        }
+        .badge {
+            float: right;
+        }
 
-	Name: <input type="text" name="product_name" value="{{product.name}}"><br>
-	Description: <input type="text" name="description" value="{{product.description}}"><br>
-	Price: <input type="text" name="price" value="{{product.price}}"><br>
-	Category: <input type="text" name="category" value="{{product.category}}"><br>
-	Inventory: <input type="text" name="inventory" value="{{product.inventory}}"><br>
-	Promotion: <input type="text" name="promotion" value="{{product.promotion}}"><br>
-	Image: <input type="text" name="image" value="{{product.image}}"><br>
+    </style>
 
-	{% endif %}
-	<button type="submit">Submit</button>
-	</form>
+    <div class="container header_director">
+        <div class="row">
+            <div class="col-md-12">  
+                <ul class="nav nav-pills nav-stacked">
+                    <h3><u>Product Management</u></h3>
+                    <li><a href="{{url_for('cart_index')}}">View Suggested products</a></li>
+                    <li><a href="{{url_for('create_product')}}">Create a product</a></li>
+                    <li><a href="{{url_for('visible_product')}}">Set a Product Visibility</a></li>
+                    <li class="active"><a href="{{ url_for('edit_product_list')}}">Edit a Product</a></li>
+                </ul>
+            </div>     
+        </div>
+    </div>
+    <div class="container prod_list">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-pills nav-stacked">
+                    <h4><u>List of Products</u></h4>
+                    {% for product in products %}
+                        <li><a href="{{url_for('edit_product', id=product.id)}}">{{product.name}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container edit">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="{{url_for('remove_product', id=product.id)}}">
+                    <button type="submit" class="btn btn-danger">Delete Product</button>
+                </form>
+            </div>           
+           <div class="col-md-12">
+				<h1>Edit Product</h1>
+                <form action="{{url_for('edit_product', id=product.id)}}", method="post">
+                    
+                    <div class="form-group">
+						<label>Product Name</label>
+						<input type="text" name="name" class="form-control" value="{{product.name}}">
+					</div>
+                    <div class="form-group">
+						<label>Description</label>
+						<input type="text" name="description" class="form-control" value="{{product.description}}">
+					</div>
+                    <div class="form-group">
+						<label>Price ($)</label>
+						<input type="text" name="price" class="form-control" value="{{product.price}}">
+                    </div>
+                    <div class="form-group">
+						<label>Category</label>
+						<input type="text" name="category" class="form-control" value="{{product.category}}">
+                    </div>
+                    <div class="form-group">
+						<label>Inventory (Pieces)</label>
+						<input type="text" name="inventory" class="form-control" value="{{product.inventory}}"> 
+                    </div>
+                    <div class="form-group">
+						<label>Promotion (%)</label>
+						<input type="text" name="promotion" class="form-control" value="{{product.promotion*100}}">
+                    </div>
+                    <div class="form-group">
+						<label>Image</label>
+						<input type="text" name="image" class="form-control" value="{{product.image}}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Apply changes</button>
+				</form>
+			</div>
+		</div>
+	</div>
 {% endblock %}
