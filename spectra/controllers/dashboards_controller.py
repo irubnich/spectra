@@ -28,10 +28,13 @@ def manager_dashboard(id):
     user = User.query.get(session["user"]["id"])
     salespeople = sorted(user.get_salespeople(), key=lambda x: x.rating(), reverse=True)
 
-    sum_ratings = 0.0
-    for sp in salespeople:
-        sum_ratings += sp.rating()
-    rating = sum_ratings / len(salespeople)
+    if len(salespeople) != 0:
+        sum_ratings = 0.0
+        for sp in salespeople:
+            sum_ratings += sp.rating()
+        rating = sum_ratings / len(salespeople)
+    else:
+        rating = 0.0
 
     salesperson = None
     if id:
