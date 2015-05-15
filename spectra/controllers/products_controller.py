@@ -1,6 +1,7 @@
 from spectra import app
 from spectra.models import db
 from spectra.models.product import Product
+from spectra.models.order_product import OrderProduct
 from spectra.controllers.user_helpers import check_user_validity
 from flask import render_template, redirect, url_for, request, flash, session
 
@@ -17,7 +18,7 @@ def products_index():
     if not valid:
         flash(error)
         return redirect(url_for('login'))
-    
+
     if (session["user"]["type"] == 'director'):
         return redirect(url_for('director_dashboard'))
 
@@ -26,7 +27,7 @@ def products_index():
 
     if (session["user"]["type"] == 'salesperson'):
         return redirect(url_for('salesperson_dashboard'))
-    
+
     categories = db.session.query(Product.category.distinct()).all()
     category = request.args.get('category')
     if category:
@@ -34,7 +35,14 @@ def products_index():
     else:
         products = Product.query.all()
 
-    return render_template("products/index.html", categories=categories, products=products)
+    top3 = None
+    if not category:
+        db_result = db.engine.execute("SELECT product_id, SUM(quantity) FROM order_products GROUP BY product_id ORDER BY SUM(quantity) DESC LIMIT 3;")
+        top3 = []
+        for r in db_result:
+            top3.append(Product.query.get(r[0]))
+
+    return render_template("products/index.html", categories=categories, products=products, result=top3)
 
 
 #

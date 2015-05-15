@@ -12,11 +12,12 @@
                 {% if session["user"]["type"] == 'client' or session["user"]["type"] == 'salesperson' %}
                     <li><a href="{{url_for('new_complaint')}}">Create Complaint</a></li>
                 {% endif %}
+                <li><a href="{{url_for('view_user_ratings')}}">View User Ratings</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="{{url_for('edit', id=session['user']['id'])}}">Edit profile</a></li>
                 {% if session["user"]["type"] == 'client' %}
-                    <li><a href="{{url_for('rating_index')}}">Rate Past Orders</a></li>
+                    <li><a href="{{url_for('rating_index')}}">View Past Orders</a></li>
                 {% endif %}
                 <li><a href="{{url_for('logout')}}">Logout</a></li>
             </ul>

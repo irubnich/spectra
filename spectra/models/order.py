@@ -1,6 +1,5 @@
 from spectra.models import db
 from spectra.models.rating import Rating
-from spectra.models.user import User
 
 class Order(db.Model):
 	__tablename__ = 'orders'
@@ -24,6 +23,7 @@ class Order(db.Model):
 		self.discount = discount
 
 	def client(self):
+		from spectra.models.user import User
 		return User.query.get(self.client_id)
 		# order = # some query
 		# name = order.client().name()

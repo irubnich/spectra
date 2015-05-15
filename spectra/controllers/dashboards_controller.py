@@ -76,17 +76,17 @@ def new_employee():
     if (position_applied == 'manager' and assigned_manager != ""):
         flash("Select Assigned Manager as 'Nothing Selected' if you are hiring a manager.")
         return redirect(url_for('hire'))
-    
+
     # Salesperson Managers relationship validation
     if (position_applied == 'salesperson' and assigned_manager == ""):
         flash("You have to Select assigned Manager.")
         return redirect(url_for('hire'))
-        
+
     user = User(email, position_applied, first_name, last_name, password, True, date_created, 0.0, 0.0)
     db.session.add(user)
     db.session.commit()
-    
-    if (position_applied == 'salesperson'): 
+
+    if (position_applied == 'salesperson'):
         manager = User.query.get(assigned_manager)
         if manager.type != "manager":
             raise BaseException("Can't assign a non-manager as a manager...")
@@ -98,25 +98,28 @@ def new_employee():
     flash("Hiring process is complete.")
     return redirect(url_for('director_dashboard'))
 
-    
 #
 # Fire/Delete a User
 #
 
 @app.route("/dashboards/fire/<int:id>")
 def fire(id):
-
     if (session["user"]["type"] != 'director'):             ## only director could delete users
         flash("You don't have permission to access that page.")
         return redirect(url_for('director_dashboard'))
-    
+
     user = User.query.get_or_404(id)
     db.session.delete(user)
+
+    # Delete salesperson manager table
+    if user.type == "salesperson":
+        relation = Manager_salespeople.query.filter(Manager_salespeople.salesperson_id == id).first()
+        db.session.delete(relation)
+
     db.session.commit()
     flash("Employee has been fired.")
     return redirect(url_for('director_dashboard'))
-    
-    
+
 #
 # Unsuspend a salesperson/manager
 #
@@ -127,9 +130,9 @@ def unsuspend(id):
     if (session["user"]["type"] != 'director'):             ## only director could delete users
         flash("You don't have permission to access that page.")
         return redirect(url_for('director_dashboard'))
-    
+
     user = User.query.get_or_404(id)
-    
+
     if (user.active == 0):
         if (user.type == 'salesperson'):
             user.active = 1
@@ -137,9 +140,9 @@ def unsuspend(id):
         elif (user.type == 'manager'):
             user.active = 1
             flash("Manager is now active.")
-    db.session.commit()   
+    db.session.commit()
     return redirect(url_for('director_dashboard', id=user.id))
-    
+
 #
 # Promote/Demote a User
 #
@@ -150,37 +153,37 @@ def promote_demote(id):
     if (session["user"]["type"] != 'director'):             ## only director could delete users
         flash("You don't have permission to access that page.")
         return redirect(url_for('director_dashboard'))
-    
+
     user = User.query.get_or_404(id)
-    
+
     if (user.type == 'salesperson'):
         user.type = 'manager'
         flash("Salesperson has been promoted to Manager.")
     elif (user.type == 'manager'):
         user.type = 'salesperson'
         flash("Manager has been demoted to Salesperson.")
-    
-    db.session.commit()   
+
+    db.session.commit()
     return redirect(url_for('director_dashboard'))
 
 #
-# Blacklist/Unblacklist a User 
+# Blacklist/Unblacklist a User
 #
- 
+
 @app.route("/dashboards/blacklist/<int:id>")
-def blacklist(id):    
+def blacklist(id):
     if (session["user"]["type"] != 'director'):             ## only director could delete users
         flash("You don't have permission to access that page.")
         return redirect(url_for('director_dashboard'))
-    
+
     user = User.query.get_or_404(id)
-    
+
     if (user.type == 'client' and user.active == 1):
         user.active = '0'
         flash("Client has been blacklisted.")
     elif (user.type == 'client' and user.active == 0):
         user.active = '1'
         flash("Client has been removed from the blacklist.")
-    
+
     db.session.commit()
     return redirect(url_for('director_dashboard', id=user.id))

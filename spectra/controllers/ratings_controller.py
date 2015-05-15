@@ -3,6 +3,8 @@ from spectra.models import db
 from spectra.models.rating import Rating
 from spectra.models.order import Order
 from spectra.models.user import User
+from spectra.models.product import Product
+from spectra.models.order_product import OrderProduct
 from spectra.controllers.user_helpers import check_user_validity
 from flask import render_template, redirect, url_for, request, flash, session
 from IPython import embed
@@ -24,12 +26,17 @@ def rating_index():
         orders = Order.query.filter(Order.salesperson_id == user.id).all()
 
     # Further filter orders based on if the current user rated them
-    orders = [i for i in orders if not i.is_rated_by_user(session["user"]["id"])]
+    # orders = [i for i in orders if not i.is_rated_by_user(session["user"]["id"])]
 
-    return render_template("ratings/index.html", orders=orders, user_type=user.type)
+    return render_template("ratings/index.html", orders=orders, user_type=user.type, id=session["user"]["id"])
 
 @app.route("/ratings/<int:order_id>/rate")
 def rate(order_id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
     # Can we rate this order?
     order = Order.query.get(order_id)
     if order.is_rated_by_user(session["user"]["id"]):
@@ -40,6 +47,11 @@ def rate(order_id):
 
 @app.route("/ratings" , methods=["POST"])
 def place_rating():
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+
     user = User.query.get(session["user"]["id"])
     order_id = request.form["order_id"] # "order_id" is from the form
     order = Order.query.get(order_id)
@@ -63,3 +75,18 @@ def place_rating():
     score = user.rate(user_being_rated, user.id, order_id, rating_type)
     flash("Thank you for rating!")
     return redirect(url_for('products_index'))
+
+@app.route("/ratings/<int:order_id>/view")
+def view(order_id):
+    (valid, error) = check_user_validity()
+    if not valid:
+        flash(error)
+        return redirect(url_for('login'))
+        
+	order = Order.query.get(order_id) #Obtain Order of the order id to find salesperson id
+	salesperson = User.query.get(order.salesperson_id) #Obtain Salesperson so we can use his name
+
+	order_items = OrderProduct.query.filter(OrderProduct.order_id == order_id).all() # = Select all products from OrderProduct in recent order so we can list them
+	grouped_products = map(lambda item: { "product": Product.query.get(item.product_id), "quantity": item.quantity }, order_items)
+
+	return render_template("ratings/view.html", order=order, products=grouped_products, salesperson=salesperson.name())
