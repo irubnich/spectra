@@ -3,11 +3,15 @@ from spectra.models import db
 from spectra.models.user import User
 from spectra.models.product import Product
 from spectra.models.order import Order
+from spectra.models.salespeople_client import SalespeopleClient
+from spectra.models.invitation import Invitation
 from spectra.models.product_suggestion import ProductSuggestion
 from spectra.models.managers_salespeople import Manager_salespeople
 from flask import render_template, redirect, url_for, request, flash, session
 import re
 import hashlib
+import random
+import string
 from datetime import datetime
 
 @app.route("/dashboards/director")
@@ -202,3 +206,41 @@ def salesperson_suggest_product_process():
 
     flash("Successfully added product suggestion.")
     return redirect(url_for('salesperson_dashboard'))
+
+@app.route("/dashboards/salesperson/invite-client")
+def salesperson_invite_client():
+    return render_template("dashboards/salesperson/invite_client.html")
+
+@app.route("/dashboards/salesperson/invite-client", methods=["POST"])
+def salesperson_invite_client_process():
+    email = request.form["client_email"]
+    date = datetime.now()
+    code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+
+    invite = Invitation(code, session["user"]["id"], email, date)
+    db.session.add(invite)
+    db.session.commit()
+
+    flash("Client invited! The code is: {0}".format(code))
+    return redirect(url_for('salesperson_dashboard'))
+
+@app.route("/dashboards/salesperson/claim-client")
+def salesperson_claim_client():
+    clients = User.query.filter(User.type == "client").all()
+    unclaimed_clients = []
+    for client in clients:
+        if not client.get_salesperson():
+            unclaimed_clients.append(client)
+
+    return render_template("dashboards/salesperson/claim_client.html", unclaimed_clients=unclaimed_clients)
+
+@app.route("/dashboards/salesperson/claim-client/<int:id>")
+def salesperson_claim_client_process(id):
+    user = User.query.get(id)
+    association = SalespeopleClient(session["user"]["id"], user.id)
+
+    db.session.add(association)
+    db.session.commit()
+
+    flash("Client claimed.")
+    return redirect(url_for('salesperson_dashboard', id=user.id))

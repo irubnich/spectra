@@ -20,6 +20,8 @@
                 <ul class="nav nav-pills nav-stacked">
                     <h2>Actions</h2>
                     <li><a href="{{url_for('salesperson_suggest_product')}}">Suggest a Product</a></li>
+                    <li><a href="{{url_for('salesperson_invite_client')}}">Invite a Client</a></li>
+                    <li><a href="{{url_for('salesperson_claim_client')}}">Claim a Client</a></li>
 
                     <h2>Clients</h2>
                     {% for c in clients %}

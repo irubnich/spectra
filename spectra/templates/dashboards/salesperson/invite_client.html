@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<style>
+    .form {
+        width: 500px;
+    }
+</style>
+
+    <div class="container form">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Invite a Client</h1>
+
+                <form action="{{url_for('salesperson_invite_client_process')}}" method="post">
+                    <div class="form-group">
+                        <label>Client Email</label>
+                        <input type="text" name="client_email" class="form-control" placeholder="Enter the client's email">
+
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
