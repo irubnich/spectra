@@ -23,6 +23,7 @@ class Order(db.Model):
 		self.discount = discount
 
 	def client(self):
+		from spectra.models.user import User
 		return User.query.get(self.client_id)
 		# order = # some query
 		# name = order.client().name()

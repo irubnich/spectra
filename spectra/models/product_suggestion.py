@@ -4,7 +4,7 @@ class ProductSuggestion(db.Model):
 	__tablename__ = 'product_suggestions'
 
 	id = db.Column(db.Integer, primary_key=True)
-	salesperson_id = db.Column(db.Integer)    
+	salesperson_id = db.Column(db.Integer)
 	name = db.Column(db.String(255))
 	reason = db.Column(db.String(255))
 
@@ -14,4 +14,4 @@ class ProductSuggestion(db.Model):
 		self.reason = reason
 
 	def __repr__(self):
-		return '<Prooduct Suggestion %r>' % self.id
+		return '<Product Suggestion %r>' % self.id

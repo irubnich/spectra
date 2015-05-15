@@ -2,6 +2,8 @@ from spectra import app
 from spectra.models import db
 from spectra.models.user import User
 from spectra.models.product import Product
+from spectra.models.order import Order
+from spectra.models.product_suggestion import ProductSuggestion
 from spectra.models.managers_salespeople import Manager_salespeople
 from flask import render_template, redirect, url_for, request, flash, session
 import re
@@ -159,4 +161,44 @@ def salesperson_dashboard(id):
     user = User.query.get(session["user"]["id"])
     clients = user.get_clients()
 
-    return render_template("dashboards/salesperson.html")
+    client = None
+    if id:
+        client = User.query.get(id)
+
+    sum_ratings = 0.0
+    for c in clients:
+        sum_ratings += c.rating()
+    rating = sum_ratings / len(clients)
+
+    return render_template("dashboards/salesperson.html", clients=clients, client=client, rating=rating)
+
+@app.route("/dashboards/salesperson/approve_order/<int:id>")
+def salesperson_approve_order(id):
+    order = Order.query.get(id)
+    order.date_approved = datetime.now()
+    db.session.commit()
+
+    flash("Order accepted.")
+    return redirect(url_for('salesperson_dashboard', id=order.client().id))
+
+@app.route("/dashboards/salesperson/reject_order/<int:id>")
+def salesperson_reject_order(id):
+    order = Order.query.get(id)
+    order.date_rejected = datetime.now()
+    db.session.commit()
+
+    flash("Order rejected.")
+    return redirect(url_for('salesperson_dashboard', id=order.client().id))
+
+@app.route("/dashboards/salesperson/suggest-product")
+def salesperson_suggest_product():
+    return render_template("dashboards/salesperson/suggest_product.html")
+
+@app.route("/dashboards/salesperson/suggest-product", methods=["POST"])
+def salesperson_suggest_product_process():
+    suggestion = ProductSuggestion(session["user"]["id"], request.form["product_name"], request.form["reason"])
+    db.session.add(suggestion)
+    db.session.commit()
+
+    flash("Successfully added product suggestion.")
+    return redirect(url_for('salesperson_dashboard'))
