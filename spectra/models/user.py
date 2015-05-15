@@ -140,6 +140,41 @@ class User(db.Model):
         hashed_password = hashlib.sha512(password).hexdigest()
         if user.password == hashed_password:
             return user
+# For client
+    def get_salesperson(self):
+        if self.type != "client":
+            return None
 
+        salesperson_entry = SalespeopleClient.query.filter(SalespeopleClient.client_id == self.id).first()
+        if not salesperson_entry:
+            return None
+
+        return User.query.get(salesperson_entry.salesperson_id)
+
+    def get_orders(self):
+        return Order.query.filter(Order.client_id == self.id).all()
+
+    # For salesperson
+    def get_clients(self):
+        #if self.type != "salesperson":
+        #    raise BaseException("Can't get clients for a non-salesperson!")
+
+        relations = SalespeopleClient.query.filter(SalespeopleClient.salesperson_id == self.id)
+        return map(lambda relation: User.query.get(relation.client_id), relations)
+
+    def get_manager(self):
+        #if self.type != "salesperson":
+        #    raise BaseException("Can't get a manager for a non-salesperson!")
+
+        return Manager_salespeople.query.filter(Manager_salespeople.salesperson_id == self.id).first()
+
+    # For managers
+    def get_salespeople(self):
+        #if self.type != "manager":
+        #    raise BaseException("Can't get salespeople for a non-manager!")
+
+        relations = Manager_salespeople.query.filter(Manager_salespeople.manager_id == self.id)
+        return map(lambda relation: User.query.get(relation.salesperson_id), relations)
+        
     def __repr__(self):
         return '<User %r>' % self.email

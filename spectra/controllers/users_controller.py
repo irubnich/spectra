@@ -4,6 +4,7 @@ from spectra.models.user import User
 from spectra.models.invitation import Invitation
 from spectra.models.salespeople_client import SalespeopleClient
 from spectra.controllers.user_helpers import set_session
+from spectra.controllers.user_helpers import check_user_validity
 from flask import render_template, redirect, url_for, request, session, flash
 from IPython import embed
 from datetime import datetime
@@ -190,28 +191,28 @@ def new_password():
     if not old_user:
         flash("Invalid user.")
         return redirect(url_for('reset_password'))
-    
+
     old_password = hashlib.sha512(old_password).hexdigest()
 
     # Old Password matching
     if old_password != old_user.password:
         flash("Your old password does not match the provided e-mail.")
         return redirect(url_for('reset_password'))
-        
+
     # Password matching
     if new_password != confirm_password:
         flash("Your passwords do not match.")
         return redirect(url_for('reset_password'))
-        
+
     password = hashlib.sha512(new_password).hexdigest()
     old_user.password = password
-    db.session.commit()        
+    db.session.commit()
     flash("Reset password is successful.")
     return redirect(url_for("login"))
 
-# 
+#
 # View User Ratings
-# 
+#
 
 @app.route("/users/view_user_ratings")
 def view_user_ratings():
@@ -224,4 +225,3 @@ def view_user_ratings():
     salespeople = sorted(User.query.filter(User.type == "salesperson").all(), key=lambda x: x.rating(), reverse=True)
 
     return render_template("users/view_user_ratings.html", clients=clients, salespeople=salespeople)
-

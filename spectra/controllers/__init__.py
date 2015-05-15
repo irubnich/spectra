@@ -1,5 +1,4 @@
 import spectra.controllers.users_controller
-import spectra.controllers.user_mgmt_controller
 import spectra.controllers.products_controller
 import spectra.controllers.complaints_controller
 import spectra.controllers.cart_controller

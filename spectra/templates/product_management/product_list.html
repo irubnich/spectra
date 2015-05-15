@@ -1,9 +1,54 @@
 {% extends "layout.html" %}
 
 {% block body %}
+    <style>
+        .header_director{
+            width: 20%;
+            height: 100%;
+            float: left;
+        }
+        .prod_list {
+            width: 20%;
+            height: 100%;
+            float: left;
+            padding-top:55px;
+        }
+        .flash {
+            width: 500px;
+            margin: 0 auto;
+        }
+        thead {
+            font-weight: bold;
+        }
+        .badge {
+            float: right;
+        }
 
-	{% for product in products %}
-	<a href="{{url_for('edit_product_page', id=product.id)}}">{{product.name}}</a><br>
-	{% endfor %}
+    </style>
 
+    <div class="container header_director">
+        <div class="row">
+            <div class="col-md-12">  
+                <ul class="nav nav-pills nav-stacked">
+                    <h3><u>Product Management</u></h3>
+                    <li><a href="{{url_for('list_suggested_products')}}">View Suggested products</a></li>
+                    <li><a href="{{url_for('create_product')}}">Create a product</a></li>
+                    <li><a href="{{url_for('visible_product')}}">Set a Product Visibility</a></li>
+                    <li class="active"><a href="{{ url_for('edit_product_list')}}">Edit a Product</a></li>
+                </ul>
+            </div>     
+        </div>
+    </div>
+    <div class="container prod_list">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-pills nav-stacked">
+                    <h4><u>List of Products</u></h4>
+                    {% for product in products %}
+                        <li><a href="{{url_for('edit_product', id=product.id)}}">{{product.name}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>     
+        </div>
+    </div>
 {% endblock %}
