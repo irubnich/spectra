@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <style>
+        thead {
+            font-weight: bold;
+        }
+    </style>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Claim a Client</h1>
+
+                <table class="table table-hover">
+                    <thead>
+                        <td>Name</td>
+                        <td>Email</td>
+                        <td>Actions</td>
+                    </thead>
+                    {% for client in unclaimed_clients %}
+                        <tr>
+                            <td>{{client.name()}}</td>
+                            <td>{{client.email}}</td>
+                            <td>
+                                <a href="{{url_for('salesperson_claim_client_process', id=client.id)}}">Claim</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

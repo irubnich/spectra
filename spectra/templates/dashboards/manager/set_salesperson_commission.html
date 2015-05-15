@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <style>
+    </style>
+
+    <div class="container form">
+		<div class="row">
+			<div class="col-md-12">
+				<h1>Set Salesperson Commission For {{salesperson.name()}}</h1>
+
+				<form action="{{url_for('manager_set_salesperson_commission_process', id=salesperson.id)}}" method="post">
+                    <div class="form-group">
+						<label>Commission %</label>
+						<input type="text" name="commission" class="form-control" value="{{salesperson.commission * 100}}">
+					</div>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}

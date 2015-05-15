@@ -10,8 +10,11 @@ class Invitation(db.Model):
     user_id = db.Column(db.Integer)
     date = db.Column(db.DateTime)
 
-    def __init__(self, invite_code):
-		self.invite_code = invite_code
+    def __init__(self, invite_code, salesperson_id, email, date):
+        self.invite_code = invite_code
+        self.salesperson_id = salesperson_id
+        self.email = email
+        self.date = date
 
     def __repr__(self):
         return '<Invitation %r>' % self.invite_code
