@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block body %}
+    <style>
+        thead {
+            font-weight: bold;
+        }
+        .badge {
+            float: right;
+        }
+    </style>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Salesperson Dashboard <small>Your Rating: {{rating}}</small></h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <ul class="nav nav-pills nav-stacked">
+                    <h2>Actions</h2>
+                    <li><a href="{{url_for('salesperson_suggest_product')}}">Suggest a Product</a></li>
+                    <li><a href="{{url_for('salesperson_invite_client')}}">Invite a Client</a></li>
+                    <li><a href="{{url_for('salesperson_claim_client')}}">Claim a Client</a></li>
+
+                    <h2>Clients</h2>
+                    {% for c in clients %}
+                        <li class="{{"active" if client.id == c.id}}">
+                            <a href="{{url_for('salesperson_dashboard', id=c.id)}}">{{c.name()}}
+                                <span class="badge">{{c.rating()}}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-8">
+                {% if not client %}
+                    <em>Select a client on your left to begin.</em>
+                {% else %}
+                    <table class="table table-hover">
+                        <thead>
+                            <td>Name</td>
+                            <td># of Orders</td>
+                            <td>Rating</td>
+                            <td>Discount</td>
+                            <td>Status</td>
+                        </thead>
+                        <tr>
+                            <td>{{client.name()}}</td>
+                            <td>{{client.get_orders()|length}}
+                            <td>{{client.rating()}}</td>
+                            <td>{{client.discount * 100}}%</td>
+                            <td>
+                                {% if client.active %}
+                                    Active
+                                {% else %}
+                                    Blacklisted
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+
+                    <h2>Orders</h2>
+                    <table class="table table-hover">
+                        <thead>
+                            <td>Order</td>
+                            <td>Total</td>
+                            <td>Discount</td>
+                            <td>Status</td>
+                            <td>Actions</td>
+                        </thead>
+                        {% for order in client.get_orders() %}
+                            <tr>
+                                <td>{{order.id}}
+                                <td>{{order.total}}</td>
+                                <td>{{order.discount}}</td>
+                                <td>
+                                    {% if order.date_approved %} Approved {% elif order.date_rejected %} Rejected {% else %} Pending {% endif %}
+                                </td>
+                                <td>
+                                    {% if not order.date_approved and not order.date_rejected %}
+                                        <a href="{{url_for('salesperson_approve_order', id=order.id)}}">Approve</a> &bull;
+                                        <a href="{{url_for('salesperson_reject_order', id=order.id)}}">Reject</a>
+                                    {% elif not order.is_rated_by_user(session["user"]["id"]) %}
+                                        <a target="_blank" href="{{url_for('rate', order_id=order.id)}}">Rate</a>
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

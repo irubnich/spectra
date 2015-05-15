@@ -1,8 +1,10 @@
 from spectra.models import db
 from sqlalchemy import desc
 from spectra.models.salespeople_client import SalespeopleClient
+from spectra.models.managers_salespeople import Manager_salespeople
 from spectra.models.rating import Rating
 from spectra.models.complaint import Complaint
+from spectra.models.order import Order
 import hashlib
 from datetime import datetime
 from IPython import embed
@@ -84,6 +86,9 @@ class User(db.Model):
 
         return User.query.get(salesperson_entry.salesperson_id)
 
+    def get_orders(self):
+        return Order.query.filter(Order.client_id == self.id).all()
+
     # For salesperson
     def get_clients(self):
         if self.type != "salesperson":
@@ -91,6 +96,20 @@ class User(db.Model):
 
         relations = SalespeopleClient.query.filter(SalespeopleClient.salesperson_id == self.id)
         return map(lambda relation: User.query.get(relation.client_id), relations)
+
+    def get_manager(self):
+        if self.type != "salesperson":
+            raise BaseException("Can't get a manager for a non-salesperson!")
+
+        return Manager_salespeople.query.filter(Manager_salespeople.salesperson_id == self.id).first()
+
+    # For managers
+    def get_salespeople(self):
+        if self.type != "manager":
+            raise BaseException("Can't get salespeople for a non-manager!")
+
+        relations = Manager_salespeople.query.filter(Manager_salespeople.manager_id == self.id)
+        return map(lambda relation: User.query.get(relation.salesperson_id), relations)
 
     def complaints(self):
         return Complaint.query.filter(Complaint.user_id == self.id)
